@@ -9,7 +9,7 @@ export async function PATCH(request: Request, { params }: Params) {
   const body = await request.json().catch(() => null);
   const parsed = renameZoneSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json({ error: "Requête invalide" }, { status: 400 });
+    return Response.json({ error: "Invalid request" }, { status: 400 });
   }
   try {
     const zone = await renameZone(id, parsed.data.name);

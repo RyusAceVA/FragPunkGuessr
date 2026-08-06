@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 
 import { MapPin } from "@/components/map-pin";
@@ -33,6 +34,7 @@ export function GuessMarker({
   onMove,
   clientToImage,
 }: GuessMarkerProps) {
+  const t = useTranslations("play.panel");
   const [dragPos, setDragPos] = useState<{ x: number; y: number } | null>(null);
   const dragRef = useRef<{
     pointerId: number;
@@ -88,7 +90,7 @@ export function GuessMarker({
   return (
     <button
       type="button"
-      aria-label="Ton pin — déplaçable"
+      aria-label={t("pinAria")}
       className="absolute z-10 cursor-grab touch-none rounded-full outline-none focus-visible:ring-2 focus-visible:ring-white active:cursor-grabbing"
       style={{ left: px, top: py, width: 0, height: 0 }}
       onPointerDown={handlePointerDown}

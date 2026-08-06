@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 
 import { cn } from "@/lib/utils";
@@ -56,6 +57,7 @@ export function FloorViewer({
   onSelect,
   onMove,
 }: FloorViewerProps) {
+  const t = useTranslations("workshop");
   const [hover, setHover] = useState<HoverState | null>(null);
 
   const handleTap = useCallback(
@@ -146,7 +148,7 @@ export function FloorViewer({
           {/* eslint-disable-next-line @next/next/no-img-element -- plan rendu à taille native dans la couche zoomée */}
           <img
             src={assetUrl(floor.assetPath)}
-            alt={`Plan ${floor.name}`}
+            alt={floor.name}
             width={floor.width}
             height={floor.height}
             draggable={false}
@@ -176,7 +178,7 @@ export function FloorViewer({
 
         {placingEnabled && (
           <p className="glass pointer-events-none absolute bottom-3 left-1/2 z-20 -translate-x-1/2 rounded-full px-3 py-1.5 text-xs text-muted-foreground">
-            Clique sur le plan pour placer le screenshot sélectionné
+            {t("placeOnPlan")}
           </p>
         )}
       </div>

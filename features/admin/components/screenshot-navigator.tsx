@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, Dices } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +29,8 @@ export function ScreenshotNavigator({
   onNext,
   onRandomUnplaced,
 }: ScreenshotNavigatorProps) {
+  const t = useTranslations("workshop");
+
   return (
     <div className="flex items-center gap-1">
       <Tooltip>
@@ -38,14 +41,14 @@ export function ScreenshotNavigator({
               size="icon-sm"
               onClick={onPrevious}
               disabled={total === 0}
-              aria-label="Screenshot précédent"
+              aria-label={t("prev")}
             >
               <ChevronLeft />
             </Button>
           }
         />
         <TooltipContent>
-          Précédent <kbd className="ml-1">←</kbd>
+          {t("prev")} <kbd className="ml-1">←</kbd>
         </TooltipContent>
       </Tooltip>
 
@@ -61,14 +64,14 @@ export function ScreenshotNavigator({
               size="icon-sm"
               onClick={onNext}
               disabled={total === 0}
-              aria-label="Screenshot suivant"
+              aria-label={t("next")}
             >
               <ChevronRight />
             </Button>
           }
         />
         <TooltipContent>
-          Suivant <kbd className="ml-1">→</kbd>
+          {t("next")} <kbd className="ml-1">→</kbd>
         </TooltipContent>
       </Tooltip>
 
@@ -80,14 +83,14 @@ export function ScreenshotNavigator({
               size="icon-sm"
               onClick={onRandomUnplaced}
               disabled={unplacedCount === 0}
-              aria-label={`Screenshot aléatoire non placé (${unplacedCount} restants)`}
+              aria-label={t("random", { count: unplacedCount })}
             >
               <Dices />
             </Button>
           }
         />
         <TooltipContent>
-          Aléatoire non placé ({unplacedCount}) <kbd className="ml-1">R</kbd>
+          {t("random", { count: unplacedCount })} <kbd className="ml-1">R</kbd>
         </TooltipContent>
       </Tooltip>
     </div>

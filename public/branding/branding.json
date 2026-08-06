@@ -1,0 +1,22 @@
+{
+  "$doc": "Illustrations du site — modifiable SANS toucher au code. Chaque slot accepte une URL absolue (ex. l'API fragpunk-assets sur raw.githubusercontent.com) ou un chemin local /branding/mon-image.png (fichier déposé dans public/branding/). Mettre null pour désactiver un slot (un fond graphique neutre prend le relais).",
+  "$api": "https://raw.githubusercontent.com/RyusAceVA/fragpunk-assets/main/<chemin>/<fichier>",
+  "slots": {
+    "home.hero": {
+      "src": "https://raw.githubusercontent.com/RyusAceVA/fragpunk-assets/main/lancers/portraits/Icon_Lancers_Head01__H_208001010.png",
+      "alt": ""
+    },
+    "play.start": {
+      "src": "https://raw.githubusercontent.com/RyusAceVA/fragpunk-assets/main/lancers/portraits/Icon_Lancers_Head01__H_208002050.png",
+      "alt": ""
+    },
+    "login.panel": {
+      "src": null,
+      "alt": ""
+    },
+    "summary.header": {
+      "src": null,
+      "alt": ""
+    }
+  }
+}

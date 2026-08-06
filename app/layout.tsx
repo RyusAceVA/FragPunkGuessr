@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
+import { Barlow_Condensed, Geist_Mono, Manrope } from "next/font/google";
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -8,18 +10,23 @@ import { siteConfig } from "@/lib/site-config";
 
 import "./globals.css";
 
-const geistSans = Geist({
+/* Corps : Manrope — lisible, moderne, neutre */
+const manrope = Manrope({
   variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+/* Display : Barlow Condensed — condensé italique capitales, ADN punk */
+const barlowCondensed = Barlow_Condensed({
+  variable: "--font-display",
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
   subsets: ["latin"],
 });
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-display",
+/* Données : Geist Mono — coordonnées, compteurs, codes */
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -33,24 +40,28 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#151321",
+  themeColor: "#151218",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="fr" className="dark" data-scroll-behavior="smooth">
+    <html lang={locale} className="dark" data-scroll-behavior="smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} flex min-h-dvh flex-col antialiased`}
+        className={`${manrope.variable} ${geistMono.variable} ${barlowCondensed.variable} flex min-h-dvh flex-col antialiased`}
       >
-        <AppProviders>
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <SiteFooter />
-        </AppProviders>
+        <NextIntlClientProvider>
+          <AppProviders>
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+          </AppProviders>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

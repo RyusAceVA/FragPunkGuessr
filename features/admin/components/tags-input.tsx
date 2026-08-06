@@ -1,6 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -25,9 +26,10 @@ export function TagsInput({
   value,
   onChange,
   id,
-  placeholder = "Ajouter un tag…",
+  placeholder,
   maxTags = 20,
 }: TagsInputProps) {
+  const t = useTranslations("workshop");
   const [draft, setDraft] = useState("");
   const [focused, setFocused] = useState(false);
   const allTags = useAdminTags().data ?? [];
@@ -68,7 +70,7 @@ export function TagsInput({
           setFocused(false);
           addTag(draft);
         }}
-        placeholder={placeholder}
+        placeholder={placeholder ?? t("tagInputPlaceholder")}
         autoComplete="off"
       />
 
@@ -76,7 +78,7 @@ export function TagsInput({
         <div
           className="flex flex-wrap gap-1"
           role="listbox"
-          aria-label="Tags existants"
+          aria-label={t("tagInputSuggestions")}
         >
           {suggestions.map((tag) => (
             <button
@@ -106,7 +108,7 @@ export function TagsInput({
               <button
                 type="button"
                 onClick={() => onChange(value.filter((t) => t !== tag))}
-                aria-label={`Retirer le tag ${tag}`}
+                aria-label={t("tagInputRemove", { name: tag })}
                 className="rounded-sm p-0.5 transition-colors hover:text-destructive"
               >
                 <X className="size-3" aria-hidden />

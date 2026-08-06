@@ -64,7 +64,7 @@ export async function createSession(): Promise<GameSessionState> {
     GAME_CONFIG.roundsPerSession,
   );
   if (screenshotIds.length === 0) {
-    throw new GameError(409, "Aucun screenshot jouable — ajoute du contenu");
+    throw new GameError(409, "No playable screenshots — add content first");
   }
 
   const session = await prisma.gameSession.create({
@@ -95,14 +95,14 @@ export async function submitGuess(
     where: { id: sessionId },
     include: { rounds: { orderBy: { index: "asc" } } },
   });
-  if (!session) throw new GameError(404, "Partie introuvable");
+  if (!session) throw new GameError(404, "Match not found");
   if (session.status === "COMPLETED") {
-    throw new GameError(409, "Cette partie est déjà terminée");
+    throw new GameError(409, "This match is already over");
   }
 
   const current = session.rounds.find((r) => r.guessFloorId === null);
   if (!current || current.id !== input.roundId) {
-    throw new GameError(409, "Cette manche n'est pas la manche courante");
+    throw new GameError(409, "This round is not the current round");
   }
 
   const screenshot = await prisma.screenshot.findUnique({
@@ -114,14 +114,14 @@ export async function submitGuess(
     screenshot.pixelX === null ||
     screenshot.pixelY === null
   ) {
-    throw new GameError(409, "Manche corrompue — screenshot déplacé");
+    throw new GameError(409, "Corrupted round — the screenshot was moved");
   }
 
   const guessFloor = await prisma.floor.findUnique({
     where: { id: input.floorId },
     include: { map: true },
   });
-  if (!guessFloor) throw new GameError(400, "Étage inconnu");
+  if (!guessFloor) throw new GameError(400, "Unknown floor");
 
   const mapCorrect = guessFloor.mapId === screenshot.mapId;
   const floorCorrect = mapCorrect && guessFloor.id === screenshot.floorId;
@@ -207,9 +207,9 @@ export async function getSessionSummary(
       },
     },
   });
-  if (!session) throw new GameError(404, "Partie introuvable");
+  if (!session) throw new GameError(404, "Match not found");
   if (session.status !== "COMPLETED") {
-    throw new GameError(409, "La partie n'est pas terminée");
+    throw new GameError(409, "The match is not finished yet");
   }
 
   const guessFloorIds = [

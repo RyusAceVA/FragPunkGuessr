@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight, ListOrdered, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { MapPin } from "@/components/map-pin";
 import { Button } from "@/components/ui/button";
@@ -48,7 +49,7 @@ function ResultMap({ result }: { result: RoundResult }) {
     <div
       ref={setContainerEl}
       {...containerHandlers}
-      className="bg-grid relative min-h-0 flex-1 cursor-grab touch-none overflow-hidden rounded-xl border border-border select-none"
+      className="bg-grid panel clip-notch relative min-h-0 flex-1 cursor-grab touch-none overflow-hidden select-none"
       data-testid="result-map"
     >
       <div
@@ -59,7 +60,7 @@ function ResultMap({ result }: { result: RoundResult }) {
         {/* eslint-disable-next-line @next/next/no-img-element -- plan rendu à taille native dans la couche zoomée */}
         <img
           src={assetUrl(actual.floorAssetPath)}
-          alt={`Plan ${actual.floorName}`}
+          alt={actual.floorName}
           width={actual.floorWidth}
           height={actual.floorHeight}
           draggable={false}
@@ -101,57 +102,53 @@ function ResultMap({ result }: { result: RoundResult }) {
         <AnchoredPin x={actual.x} y={actual.y} color={ACTUAL_PIN_COLOR} />
       </div>
 
-      <span className="glass absolute top-2 left-2 z-10 rounded-full px-2.5 py-1 text-xs text-muted-foreground">
+      {/* Noms de map/étage — jamais traduits */}
+      <span className="clip-slash absolute top-2 left-2 z-10 bg-foreground px-2.5 py-1 font-heading text-xs font-bold tracking-wider text-background uppercase italic">
         {actual.mapName} · {actual.floorName}
       </span>
     </div>
   );
 }
 
-/** Cartouche de verdict selon le cas : mauvaise map / mauvais étage / distance. */
+/** Cartouche de verdict : mauvaise map / mauvais étage / distance. */
 function Verdict({ result }: { result: RoundResult }) {
+  const t = useTranslations("play.result");
+
   if (!result.mapCorrect) {
     return (
-      <div className="rounded-xl border border-border bg-card p-5 text-center">
-        <p className="font-heading text-xl font-bold text-destructive">
-          Mauvaise map
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          La bonne map était :{" "}
-          <span className="font-semibold text-foreground">
+      <div className="panel clip-notch space-y-1 border-destructive/40 p-5 text-center">
+        <p className="display text-3xl text-destructive">{t("wrongMap")}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("wrongMapWas")}{" "}
+          <span className="font-heading font-bold text-foreground uppercase">
             {result.actual.mapName}
           </span>
           <br />
-          Tu as répondu {result.guess.mapName}.
+          {t("youAnswered", { name: result.guess.mapName })}
         </p>
       </div>
     );
   }
   if (!result.floorCorrect) {
     return (
-      <div className="rounded-xl border border-border bg-card p-5 text-center">
-        <p className="font-heading text-xl font-bold text-destructive">
-          Mauvais étage
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Bonne map, mais c&apos;était{" "}
-          <span className="font-semibold text-foreground">
-            {result.actual.floorName}
-          </span>{" "}
-          — tu as répondu {result.guess.floorName}.
+      <div className="panel clip-notch space-y-1 border-destructive/40 p-5 text-center">
+        <p className="display text-3xl text-destructive">{t("wrongFloor")}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("wrongFloorDetail", {
+            actual: result.actual.floorName,
+            guess: result.guess.floorName,
+          })}
         </p>
       </div>
     );
   }
   return (
-    <div className="rounded-xl border border-border bg-card p-5 text-center">
-      <p className="text-xs tracking-widest text-muted-foreground uppercase">
-        Distance
-      </p>
-      <p className="mt-1 font-heading text-4xl font-bold tabular-nums">
+    <div className="panel clip-notch hard-shadow-signal p-5 text-center">
+      <p className="overline-label text-muted-foreground">{t("distance")}</p>
+      <p className="display mt-1 text-5xl tabular-nums">
         {result.distance}
-        <span className="ml-1.5 text-lg font-medium text-muted-foreground">
-          pixels
+        <span className="ml-1.5 text-xl text-muted-foreground">
+          {t("pixels")}
         </span>
       </p>
     </div>
@@ -170,6 +167,8 @@ export function ResultOverlay({
   screenshotUrl,
   onNext,
 }: ResultOverlayProps) {
+  const t = useTranslations("play.result");
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -191,11 +190,11 @@ export function ResultOverlay({
         >
           <Verdict result={result} />
 
-          <div className="overflow-hidden rounded-xl border border-border bg-card">
+          <div className="panel clip-notch overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element -- image servie par l'id de manche */}
             <img
               src={screenshotUrl}
-              alt="Screenshot de la manche"
+              alt={t("screenshotAlt")}
               className="aspect-video w-full bg-black/50 object-contain"
               decoding="async"
             />
@@ -204,20 +203,20 @@ export function ResultOverlay({
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <span
-                className="size-2 rounded-full"
+                className="size-2"
                 style={{ background: ACTUAL_PIN_COLOR }}
                 aria-hidden
               />
-              Vraie position
+              {t("actualSpot")}
             </span>
             {result.floorCorrect && (
               <span className="flex items-center gap-1.5">
                 <span
-                  className="size-2 rounded-full"
+                  className="size-2"
                   style={{ background: PLAYER_PIN_COLOR }}
                   aria-hidden
                 />
-                Ton pin
+                {t("yourPin")}
               </span>
             )}
           </div>
@@ -227,12 +226,12 @@ export function ResultOverlay({
               {result.isLastRound ? (
                 <>
                   <ListOrdered data-icon="inline-start" />
-                  Voir le récapitulatif
+                  {t("recap")}
                 </>
               ) : (
                 <>
                   <ArrowRight data-icon="inline-start" />
-                  Manche suivante
+                  {t("next")}
                 </>
               )}
             </Button>

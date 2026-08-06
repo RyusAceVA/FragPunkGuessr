@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Home, Loader2, RotateCcw, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { FadeIn } from "@/components/motion/fade-in";
 import { Button } from "@/components/ui/button";
@@ -12,59 +13,63 @@ import type { RoundHistoryEntry } from "../types";
 
 function CheckOrCross({ ok }: { ok: boolean }) {
   return ok ? (
-    <Check className="size-3.5 text-emerald-400" aria-hidden />
+    <Check className="size-3.5 text-signal" aria-hidden />
   ) : (
     <X className="size-3.5 text-destructive" aria-hidden />
   );
 }
 
 function RoundRow({ entry }: { entry: RoundHistoryEntry }) {
+  const t = useTranslations("play.summary");
+
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-2.5">
+    <div className="panel clip-notch-sm flex items-center gap-3 p-2.5">
       {/* eslint-disable-next-line @next/next/no-img-element -- image servie par l'id de manche */}
       <img
         src={entry.imageUrl}
-        alt={`Screenshot de la manche ${entry.index}`}
-        className="h-14 w-24 shrink-0 rounded-lg bg-black/40 object-cover"
+        alt={t("screenshotAlt", { index: entry.index })}
+        className="h-14 w-24 shrink-0 rounded-sm bg-black/40 object-cover"
         loading="lazy"
         decoding="async"
       />
       <div className="min-w-0 flex-1 space-y-0.5 text-xs">
-        <p className="font-heading text-sm font-semibold">
-          Manche {entry.index}
+        <p className="font-heading text-sm font-bold tracking-wide uppercase">
+          {t("round", { index: entry.index })}
         </p>
         <p className="flex items-center gap-1.5 text-muted-foreground">
           <CheckOrCross ok={entry.mapCorrect} />
           <span className="truncate">
-            Map : {entry.actualMapName}
-            {!entry.mapCorrect && ` (répondu ${entry.guessMapName})`}
+            {t("map", { name: entry.actualMapName })}
+            {!entry.mapCorrect && t("answered", { name: entry.guessMapName })}
           </span>
         </p>
         <p className="flex items-center gap-1.5 text-muted-foreground">
           <CheckOrCross ok={entry.floorCorrect} />
           <span className="truncate">
-            Étage : {entry.actualFloorName}
+            {t("floor", { name: entry.actualFloorName })}
             {entry.mapCorrect &&
               !entry.floorCorrect &&
-              ` (répondu ${entry.guessFloorName})`}
+              t("answered", { name: entry.guessFloorName })}
           </span>
         </p>
       </div>
       <div
         className={cn(
-          "shrink-0 rounded-lg px-3 py-2 text-center",
-          entry.distance !== null ? "bg-primary/10" : "bg-destructive/10",
+          "clip-slash shrink-0 px-3 py-2 text-center",
+          entry.distance !== null ? "bg-signal/15" : "bg-destructive/15",
         )}
       >
         {entry.distance !== null ? (
           <>
-            <p className="font-heading text-lg font-bold tabular-nums">
+            <p className="display text-xl text-signal tabular-nums">
               {entry.distance}
             </p>
-            <p className="text-[10px] text-muted-foreground">pixels</p>
+            <p className="text-[10px] text-muted-foreground">{t("pixels")}</p>
           </>
         ) : (
-          <p className="text-xs font-semibold text-destructive">Perdue</p>
+          <p className="font-heading text-xs font-bold text-destructive uppercase italic">
+            {t("lost")}
+          </p>
         )}
       </div>
     </div>
@@ -85,6 +90,7 @@ export function SummaryScreen({
   onNewGame,
   onQuit,
 }: SummaryScreenProps) {
+  const t = useTranslations("play.summary");
   const summaryQuery = useSessionSummary(sessionId, true);
   const rounds = summaryQuery.data?.rounds ?? [];
 
@@ -92,12 +98,15 @@ export function SummaryScreen({
     <div className="mx-auto flex h-full w-full max-w-2xl flex-col gap-4 overflow-y-auto px-4 py-8 sm:px-6">
       <FadeIn>
         <div className="space-y-1 text-center">
-          <h1 className="font-heading text-3xl font-bold">
-            Fin de <span className="text-gradient-neon">partie</span>
+          <h1 className="display text-5xl">
+            {t("title1")} <span className="text-primary">{t("title2")}</span>
           </h1>
           <p className="text-sm text-muted-foreground">
             {rounds.length > 0 &&
-              `${rounds.filter((r) => r.floorCorrect).length}/${rounds.length} manches réussies`}
+              t("nailed", {
+                correct: rounds.filter((r) => r.floorCorrect).length,
+                total: rounds.length,
+              })}
           </p>
         </div>
       </FadeIn>
@@ -131,7 +140,7 @@ export function SummaryScreen({
             ) : (
               <RotateCcw data-icon="inline-start" />
             )}
-            Nouvelle partie
+            {t("newGame")}
           </Button>
           <Button
             variant="outline"
@@ -141,7 +150,7 @@ export function SummaryScreen({
             disabled={isRestarting}
           >
             <Home data-icon="inline-start" />
-            Retour à l&apos;accueil
+            {t("backHome")}
           </Button>
         </div>
       </FadeIn>

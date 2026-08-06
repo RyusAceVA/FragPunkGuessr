@@ -133,7 +133,7 @@ export async function updateScreenshot(
     where: { id },
     select: { mapId: true },
   });
-  if (!current) throw new AdminError(404, "Screenshot introuvable");
+  if (!current) throw new AdminError(404, "Screenshot not found");
 
   const data: Record<string, unknown> = {};
 
@@ -147,7 +147,7 @@ export async function updateScreenshot(
         where: { id: input.placement.floorId },
       });
       if (!floor || floor.mapId !== current.mapId) {
-        throw new AdminError(400, "Étage invalide pour cette map");
+        throw new AdminError(400, "Invalid floor for this map");
       }
       data.floorId = floor.id;
       // Garde-fou serveur : la position reste dans les bornes du plan
@@ -164,7 +164,7 @@ export async function updateScreenshot(
         where: { id: input.zoneId },
       });
       if (!zone || zone.mapId !== current.mapId) {
-        throw new AdminError(400, "Zone invalide pour cette map");
+        throw new AdminError(400, "Invalid zone for this map");
       }
       data.zoneId = zone.id;
     }

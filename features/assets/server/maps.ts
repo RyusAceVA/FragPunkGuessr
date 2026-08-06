@@ -25,7 +25,7 @@ export async function createAssetsMap(name: string, code: string) {
     select: { id: true },
   });
   if (existing) {
-    throw new AssetsError(409, `La map « ${code} » existe déjà`);
+    throw new AssetsError(409, `Map “${code}” already exists`);
   }
 
   const mapDir = path.join(assetsRoot(), code);

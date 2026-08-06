@@ -39,60 +39,77 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --color-neon-magenta: var(--neon-magenta);
-  --color-neon-cyan: var(--neon-cyan);
-  --color-neon-violet: var(--neon-violet);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  --color-signal: var(--signal);
+  --color-info: var(--info);
+  --color-neon-cyan: var(--info);
+  --color-neon-magenta: var(--primary);
+  --color-neon-violet: var(--primary);
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-3xl: calc(var(--radius) * 2.5);
+  --radius-4xl: calc(var(--radius) * 3);
 }
 
 /*
- * Thème FragPunk Guessr — dark-first.
- * Identité : fond quasi noir teinté violet, magenta électrique en couleur
- * primaire, cyan néon en couleur signal. Les néons restent des accents
- * (glows, soulignés, bordures), jamais des aplats.
+ * ═══════════════════════════════════════════════════════════════════
+ *  FRAGPUNK GUESSR — DESIGN SYSTEM « INK & SIGNAL »
+ *  (documentation complète : DESIGN.md)
+ *
+ *  Principes hérités de la DA FragPunk, jamais copiés :
+ *  – encre : fond noir chaud, texte blanc papier, contrastes francs ;
+ *  – signal : magenta punk (action), lime (réussite/énergie),
+ *    cyan (information) — toujours en accents, jamais en aplats ;
+ *  – géométrie : angles vifs, coins entaillés (notch), diagonales ;
+ *  – print : ombres dures décalées plutôt que flous, textures
+ *    halftone/scanlines discrètes ;
+ *  – typo : display condensé italique capitales (Barlow Condensed),
+ *    corps Manrope, données Geist Mono.
+ * ═══════════════════════════════════════════════════════════════════
  */
 :root {
-  --background: oklch(0.15 0.015 290);
-  --foreground: oklch(0.95 0.01 300);
-  --card: oklch(0.19 0.02 290);
-  --card-foreground: oklch(0.95 0.01 300);
-  --popover: oklch(0.19 0.02 290);
-  --popover-foreground: oklch(0.95 0.01 300);
-  --primary: oklch(0.68 0.24 330);
-  --primary-foreground: oklch(0.98 0.01 330);
-  --secondary: oklch(0.25 0.025 290);
-  --secondary-foreground: oklch(0.95 0.01 300);
-  --muted: oklch(0.23 0.02 290);
-  --muted-foreground: oklch(0.68 0.02 295);
-  --accent: oklch(0.26 0.03 290);
-  --accent-foreground: oklch(0.95 0.01 300);
-  --destructive: oklch(0.62 0.21 25);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.68 0.24 330 / 70%);
-  --chart-1: oklch(0.68 0.24 330);
-  --chart-2: oklch(0.8 0.13 210);
-  --chart-3: oklch(0.62 0.2 295);
+  /* — Palette encre — */
+  --background: oklch(0.145 0.01 300);
+  --foreground: oklch(0.955 0.006 90);
+  --card: oklch(0.185 0.012 300);
+  --card-foreground: oklch(0.955 0.006 90);
+  --popover: oklch(0.2 0.012 300);
+  --popover-foreground: oklch(0.955 0.006 90);
+  /* — Signaux — */
+  --primary: oklch(0.64 0.25 358);
+  --primary-foreground: oklch(0.985 0.005 90);
+  --signal: oklch(0.88 0.2 128);
+  --info: oklch(0.8 0.12 210);
+  --secondary: oklch(0.25 0.02 300);
+  --secondary-foreground: oklch(0.955 0.006 90);
+  --muted: oklch(0.23 0.015 300);
+  --muted-foreground: oklch(0.67 0.015 300);
+  --accent: oklch(0.26 0.025 300);
+  --accent-foreground: oklch(0.955 0.006 90);
+  --destructive: oklch(0.62 0.22 28);
+  --border: oklch(0.955 0.006 90 / 12%);
+  --input: oklch(0.955 0.006 90 / 16%);
+  --ring: oklch(0.64 0.25 358 / 70%);
+  --chart-1: oklch(0.64 0.25 358);
+  --chart-2: oklch(0.88 0.2 128);
+  --chart-3: oklch(0.8 0.12 210);
   --chart-4: oklch(0.8 0.14 85);
   --chart-5: oklch(0.72 0.17 150);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.17 0.018 290);
-  --sidebar-foreground: oklch(0.95 0.01 300);
-  --sidebar-primary: oklch(0.68 0.24 330);
-  --sidebar-primary-foreground: oklch(0.98 0.01 330);
-  --sidebar-accent: oklch(0.26 0.03 290);
-  --sidebar-accent-foreground: oklch(0.95 0.01 300);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.68 0.24 330 / 70%);
-  --neon-magenta: oklch(0.68 0.24 330);
-  --neon-cyan: oklch(0.82 0.13 210);
-  --neon-violet: oklch(0.62 0.2 295);
+  /* — Géométrie — */
+  --radius: 0.5rem;
+  --notch: 14px;
+  /* — Ombres print — */
+  --shadow-ink: oklch(0.08 0.01 300 / 85%);
+  --sidebar: oklch(0.17 0.012 300);
+  --sidebar-foreground: oklch(0.955 0.006 90);
+  --sidebar-primary: oklch(0.64 0.25 358);
+  --sidebar-primary-foreground: oklch(0.985 0.005 90);
+  --sidebar-accent: oklch(0.26 0.025 300);
+  --sidebar-accent-foreground: oklch(0.955 0.006 90);
+  --sidebar-border: oklch(0.955 0.006 90 / 12%);
+  --sidebar-ring: oklch(0.64 0.25 358 / 70%);
 }
 
 @layer base {
@@ -106,48 +123,137 @@
     @apply scroll-smooth font-sans antialiased;
   }
   ::selection {
-    background: oklch(0.68 0.24 330 / 35%);
+    background: oklch(0.64 0.25 358 / 40%);
   }
 }
 
 @layer utilities {
-  /* Titres display */
+  /* ── Typographie display ─────────────────────────────────────── */
   .font-heading {
     font-family: var(--font-display), var(--font-sans), sans-serif;
   }
-
-  /* Texte dégradé magenta → cyan (logo, titres hero) */
-  .text-gradient-neon {
-    @apply bg-gradient-to-r from-neon-magenta via-neon-violet to-neon-cyan bg-clip-text text-transparent;
+  /* Titre punk : condensé, capitales, italique, serré */
+  .display {
+    font-family: var(--font-display), var(--font-sans), sans-serif;
+    font-style: italic;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    line-height: 0.95;
+  }
+  /* Étiquette technique : petites capitales espacées */
+  .overline-label {
+    font-family: var(--font-display), var(--font-sans), sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.72rem;
   }
 
-  /* Halo néon discret autour d'un élément */
+  /* ── Couleur & texte ─────────────────────────────────────────── */
+  .text-gradient-neon {
+    @apply bg-gradient-to-r from-primary via-primary to-signal bg-clip-text text-transparent;
+  }
+  .text-signal {
+    color: var(--signal);
+  }
+
+  /* ── Découpes (langage FragPunk : angles tranchés) ───────────── */
+  .clip-notch {
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% calc(100% - var(--notch)),
+      calc(100% - var(--notch)) 100%,
+      0 100%
+    );
+  }
+  .clip-notch-sm {
+    --notch: 8px;
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% calc(100% - var(--notch)),
+      calc(100% - var(--notch)) 100%,
+      0 100%
+    );
+  }
+  .clip-slash {
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  }
+
+  /* ── Ombres print (dures, décalées — jamais de flou) ─────────── */
+  .hard-shadow {
+    box-shadow: 4px 4px 0 var(--shadow-ink);
+  }
+  .hard-shadow-primary {
+    box-shadow: 4px 4px 0 oklch(0.64 0.25 358 / 55%);
+  }
+  .hard-shadow-signal {
+    box-shadow: 4px 4px 0 oklch(0.88 0.2 128 / 45%);
+  }
+  /* Halo réservé aux CTA principaux */
   .glow-primary {
-    box-shadow: 0 0 24px -6px oklch(0.68 0.24 330 / 45%);
+    box-shadow:
+      3px 3px 0 var(--shadow-ink),
+      0 0 22px -6px oklch(0.64 0.25 358 / 50%);
   }
   .glow-cyan {
-    box-shadow: 0 0 24px -6px oklch(0.82 0.13 210 / 40%);
+    box-shadow: 0 0 20px -6px oklch(0.8 0.12 210 / 40%);
   }
 
-  /* Panneau translucide (navbar, overlays) */
+  /* ── Surfaces ────────────────────────────────────────────────── */
   .glass {
-    @apply border border-border bg-background/70 backdrop-blur-xl;
+    @apply border border-border bg-background/75 backdrop-blur-xl;
+  }
+  .panel {
+    @apply border border-border bg-card;
   }
 
-  /* Grille tactique en fond de section */
+  /* ── Textures (discrètes, jamais envahissantes) ──────────────── */
   .bg-grid {
     background-image:
       linear-gradient(to right, oklch(1 0 0 / 4%) 1px, transparent 1px),
       linear-gradient(to bottom, oklch(1 0 0 / 4%) 1px, transparent 1px);
     background-size: 48px 48px;
   }
-
-  /* Masque radial pour adoucir la grille vers les bords */
+  .texture-halftone {
+    background-image: radial-gradient(
+      oklch(0.955 0.006 90 / 7%) 1px,
+      transparent 1px
+    );
+    background-size: 8px 8px;
+  }
+  .texture-scan {
+    background-image: repeating-linear-gradient(
+      0deg,
+      oklch(1 0 0 / 2.5%) 0 1px,
+      transparent 1px 4px
+    );
+  }
+  .stripes-primary {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      oklch(0.64 0.25 358) 0 10px,
+      transparent 10px 20px
+    );
+  }
   .mask-fade-edges {
     mask-image: radial-gradient(
       ellipse 80% 60% at 50% 40%,
       black 40%,
       transparent 100%
+    );
+  }
+
+  /* ── Séparateur diagonal (signature de section) ──────────────── */
+  .slash-divider {
+    position: relative;
+    height: 4px;
+    background: repeating-linear-gradient(
+      -55deg,
+      var(--border) 0 8px,
+      transparent 8px 16px
     );
   }
 }

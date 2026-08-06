@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 
 import {
@@ -45,6 +46,7 @@ export function FloorMarker({
   onHoverChange,
   clientToImage,
 }: FloorMarkerProps) {
+  const t = useTranslations("workshop");
   const [dragPos, setDragPos] = useState<{ x: number; y: number } | null>(null);
   const dragRef = useRef<{
     pointerId: number;
@@ -111,7 +113,7 @@ export function FloorMarker({
   return (
     <button
       type="button"
-      aria-label={`Screenshot ${screenshot.code}`}
+      aria-label={t("markerAria", { code: screenshot.code })}
       aria-pressed={selected}
       className="absolute cursor-grab touch-none rounded-full outline-none focus-visible:ring-2 focus-visible:ring-white active:cursor-grabbing"
       style={{

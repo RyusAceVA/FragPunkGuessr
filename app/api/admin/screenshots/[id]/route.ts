@@ -14,7 +14,7 @@ export async function PATCH(
   const parsed = updateScreenshotSchema.safeParse(body);
   if (!parsed.success) {
     return Response.json(
-      { error: "Requête invalide", details: parsed.error.flatten() },
+      { error: "Invalid request", details: parsed.error.flatten() },
       { status: 400 },
     );
   }

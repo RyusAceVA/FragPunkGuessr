@@ -1,6 +1,7 @@
 "use client";
 
 import { Images, Maximize, Minus, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -29,8 +30,6 @@ interface FloorToolbarProps {
   floorName: string;
 }
 
-const LEGEND = [UNSET_STYLE, ...DIFFICULTIES.map((d) => DIFFICULTY_STYLES[d])];
-
 /** Barre d'outils du visualiseur : zoom, modes d'affichage, légende. */
 export function FloorToolbar({
   zoomPercent,
@@ -44,6 +43,14 @@ export function FloorToolbar({
   placedCount,
   floorName,
 }: FloorToolbarProps) {
+  const t = useTranslations("workshop");
+  const tDiff = useTranslations("difficulty");
+
+  const legend = [
+    { key: "UNSET", dot: UNSET_STYLE.dot },
+    ...DIFFICULTIES.map((d) => ({ key: d, dot: DIFFICULTY_STYLES[d].dot })),
+  ];
+
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border px-3 py-2">
       <div className="flex items-center gap-1">
@@ -55,7 +62,7 @@ export function FloorToolbar({
               </Button>
             }
           />
-          <TooltipContent>Zoom arrière</TooltipContent>
+          <TooltipContent>{t("zoomOut")}</TooltipContent>
         </Tooltip>
         <span className="w-12 text-center font-mono text-xs text-muted-foreground tabular-nums">
           {zoomPercent}%
@@ -68,7 +75,7 @@ export function FloorToolbar({
               </Button>
             }
           />
-          <TooltipContent>Zoom avant</TooltipContent>
+          <TooltipContent>{t("zoomIn")}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger
@@ -78,7 +85,7 @@ export function FloorToolbar({
               </Button>
             }
           />
-          <TooltipContent>Ajuster à l&apos;écran</TooltipContent>
+          <TooltipContent>{t("fit")}</TooltipContent>
         </Tooltip>
       </div>
 
@@ -93,7 +100,7 @@ export function FloorToolbar({
           }
         />
         <Label htmlFor="show-all-markers" className="cursor-pointer text-xs">
-          Afficher tous les screenshots placés
+          {t("showAll")}
         </Label>
       </div>
 
@@ -108,24 +115,21 @@ export function FloorToolbar({
           className="flex cursor-pointer items-center gap-1 text-xs"
         >
           <Images className="size-3.5" aria-hidden />
-          Miniatures
+          {t("thumbnails")}
         </Label>
       </div>
 
       <div className="ml-auto flex items-center gap-4 text-xs text-muted-foreground">
         <div className="hidden items-center gap-3 lg:flex">
-          {LEGEND.map((style) => (
-            <span key={style.label} className="flex items-center gap-1.5">
-              <span
-                className={cn("size-2 rounded-full", style.dot)}
-                aria-hidden
-              />
-              {style.label}
+          {legend.map((entry) => (
+            <span key={entry.key} className="flex items-center gap-1.5">
+              <span className={cn("size-2", entry.dot)} aria-hidden />
+              {tDiff(entry.key)}
             </span>
           ))}
         </div>
-        <span className="font-medium">
-          {floorName} · {placedCount} placé{placedCount > 1 ? "s" : ""}
+        <span className="overline-label">
+          {t("placedCount", { floor: floorName, count: placedCount })}
         </span>
       </div>
     </div>

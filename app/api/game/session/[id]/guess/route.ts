@@ -9,7 +9,7 @@ export async function POST(
   const body = await request.json().catch(() => null);
   const parsed = submitGuessSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json({ error: "Requête invalide" }, { status: 400 });
+    return Response.json({ error: "Invalid request" }, { status: 400 });
   }
   try {
     const response = await submitGuess(id, parsed.data);

@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -34,11 +35,6 @@ function slugify(value: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-const FLOOR_COUNT_ITEMS = [1, 2, 3, 4, 5, 6].map((n) => ({
-  label: `${n} étage${n > 1 ? "s" : ""}`,
-  value: String(n),
-}));
-
 interface CreateMapDialogProps {
   disabled?: boolean;
   onCreated: (mapId: string) => void;
@@ -46,6 +42,7 @@ interface CreateMapDialogProps {
 
 /** Création d'une map : la structure disque + base est générée. */
 export function CreateMapDialog({ disabled, onCreated }: CreateMapDialogProps) {
+  const t = useTranslations("assetsManager");
   const create = useCreateAssetsMap();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -53,6 +50,11 @@ export function CreateMapDialog({ disabled, onCreated }: CreateMapDialogProps) {
   const [codeTouched, setCodeTouched] = useState(false);
   const [floorCount, setFloorCount] = useState("2");
   const [error, setError] = useState<string | null>(null);
+
+  const floorItems = [1, 2, 3, 4, 5, 6].map((n) => ({
+    label: t("floorCountItem", { count: n }),
+    value: String(n),
+  }));
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -62,14 +64,14 @@ export function CreateMapDialog({ disabled, onCreated }: CreateMapDialogProps) {
       floorCount: Number(floorCount),
     });
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Formulaire invalide");
+      setError(parsed.error.issues[0]?.message ?? "Invalid form");
       return;
     }
     setError(null);
     create.mutate(parsed.data, {
       onSuccess: (map) => {
-        toast.success(`Map « ${map.name} » créée`, {
-          description: `Structure ${map.assetDir}/floors + screenshots prête — importe les plans.`,
+        toast.success(t("createdToast", { name: map.name }), {
+          description: t("createdDetail", { dir: map.assetDir }),
         });
         setOpen(false);
         setName("");
@@ -89,20 +91,17 @@ export function CreateMapDialog({ disabled, onCreated }: CreateMapDialogProps) {
         disabled={disabled}
       >
         <Plus data-icon="inline-start" />
-        Nouvelle map
+        {t("newMap")}
       </Button>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Créer une map</DialogTitle>
-          <DialogDescription>
-            La structure de dossiers (plans, screenshots, miniatures) est créée
-            automatiquement.
-          </DialogDescription>
+          <DialogTitle>{t("createTitle")}</DialogTitle>
+          <DialogDescription>{t("createDescription")}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-3" noValidate>
           <div className="space-y-1.5">
-            <Label htmlFor="nm-name">Nom</Label>
+            <Label htmlFor="nm-name">{t("name")}</Label>
             <Input
               id="nm-name"
               value={name}
@@ -114,7 +113,7 @@ export function CreateMapDialog({ disabled, onCreated }: CreateMapDialogProps) {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="nm-code">Code (dossier)</Label>
+            <Label htmlFor="nm-code">{t("code")}</Label>
             <Input
               id="nm-code"
               value={code}
@@ -127,9 +126,9 @@ export function CreateMapDialog({ disabled, onCreated }: CreateMapDialogProps) {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="nm-floors">Nombre d&apos;étages (indicatif)</Label>
+            <Label htmlFor="nm-floors">{t("floorCountLabel")}</Label>
             <Select
-              items={FLOOR_COUNT_ITEMS}
+              items={floorItems}
               value={floorCount}
               onValueChange={(value) => setFloorCount(value as string)}
             >
@@ -137,7 +136,7 @@ export function CreateMapDialog({ disabled, onCreated }: CreateMapDialogProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {FLOOR_COUNT_ITEMS.map((item) => (
+                {floorItems.map((item) => (
                   <SelectItem key={item.value} value={item.value}>
                     {item.label}
                   </SelectItem>
@@ -158,7 +157,7 @@ export function CreateMapDialog({ disabled, onCreated }: CreateMapDialogProps) {
             ) : (
               <Plus data-icon="inline-start" />
             )}
-            Créer la map
+            {t("createSubmit")}
           </Button>
         </form>
       </DialogContent>

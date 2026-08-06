@@ -7,6 +7,7 @@ import {
   Lock,
   Map as MapIcon,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -25,16 +26,17 @@ import { UploadProgress } from "./upload-progress";
 
 /** Panneau plans d'étages : liste + import drag & drop. */
 function FloorsPanel({ map, disabled }: { map: AssetsMap; disabled: boolean }) {
+  const t = useTranslations("assetsManager");
   const queue = useUploadQueue(map.id, "floor");
   const floors = [...map.floors].sort((a, b) => b.level - a.level);
 
   return (
     <section className="space-y-3">
-      <h2 className="flex items-center gap-2 font-heading text-base font-semibold">
+      <h2 className="flex items-center gap-2 font-heading text-base font-bold tracking-wide uppercase">
         <Layers className="size-4 text-primary" aria-hidden />
-        Plans d&apos;étages
-        <span className="text-xs font-normal text-muted-foreground">
-          {floors.length} importé{floors.length > 1 ? "s" : ""}
+        {t("floorsTitle")}
+        <span className="text-xs font-normal text-muted-foreground normal-case">
+          {t("floorsImported", { count: floors.length })}
         </span>
       </h2>
 
@@ -42,7 +44,7 @@ function FloorsPanel({ map, disabled }: { map: AssetsMap; disabled: boolean }) {
         <ul className="flex flex-wrap gap-2">
           {floors.map((floor) => (
             <li key={floor.id}>
-              <Badge variant="secondary" className="font-mono">
+              <Badge variant="secondary" className="font-mono normal-case">
                 {floor.name}
                 <span className="ml-1 text-muted-foreground">
                   {floor.width}×{floor.height}
@@ -56,8 +58,8 @@ function FloorsPanel({ map, disabled }: { map: AssetsMap; disabled: boolean }) {
       <Dropzone
         onFiles={(files) => void queue.start(files)}
         disabled={disabled || queue.isUploading}
-        label="Dépose les plans ici (ou clique)"
-        hint="L'étage est détecté par le nom : 1F, 2F, 3F, B1, B2, RDC, Roof, Basement…"
+        label={t("floorsDrop")}
+        hint={t("floorsHint")}
       />
       <UploadProgress {...queue} />
     </section>
@@ -72,6 +74,7 @@ function ScreenshotsPanel({
   map: AssetsMap;
   disabled: boolean;
 }) {
+  const t = useTranslations("assetsManager");
   const router = useRouter();
   const queue = useUploadQueue(map.id, "screenshot");
   const unplaced = map.screenshotCount - map.placedCount;
@@ -79,12 +82,14 @@ function ScreenshotsPanel({
   return (
     <section className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="flex items-center gap-2 font-heading text-base font-semibold">
-          <Crosshair className="size-4 text-neon-cyan" aria-hidden />
-          Screenshots
-          <span className="text-xs font-normal text-muted-foreground">
-            {map.screenshotCount} importé{map.screenshotCount > 1 ? "s" : ""} ·{" "}
-            {map.placedCount} placé{map.placedCount > 1 ? "s" : ""}
+        <h2 className="flex items-center gap-2 font-heading text-base font-bold tracking-wide uppercase">
+          <Crosshair className="size-4 text-info" aria-hidden />
+          {t("screenshotsTitle")}
+          <span className="text-xs font-normal text-muted-foreground normal-case">
+            {t("screenshotsCounts", {
+              imported: map.screenshotCount,
+              placed: map.placedCount,
+            })}
           </span>
         </h2>
         {unplaced > 0 && (
@@ -94,7 +99,7 @@ function ScreenshotsPanel({
             onClick={() => router.push(`/admin?map=${map.id}&placement=1`)}
           >
             <Crosshair data-icon="inline-start" />
-            Commencer le placement ({unplaced})
+            {t("startPlacement", { count: unplaced })}
           </Button>
         )}
       </div>
@@ -104,10 +109,10 @@ function ScreenshotsPanel({
         disabled={disabled || queue.isUploading || map.floors.length === 0}
         label={
           map.floors.length === 0
-            ? "Importe d'abord au moins un plan d'étage"
-            : "Dépose les screenshots ici — 1 ou 500 fichiers"
+            ? t("screenshotsDropNoFloor")
+            : t("screenshotsDrop")
         }
-        hint="Copie + miniature + entrée en base pour chaque fichier. Aucun écrasement : les doublons de nom sont suffixés."
+        hint={t("screenshotsHint")}
       />
       <UploadProgress {...queue} />
     </section>
@@ -121,6 +126,7 @@ function ScreenshotsPanel({
  * les deux alimentent exactement la même structure.
  */
 export function AssetsManager() {
+  const t = useTranslations("assetsManager");
   const mapsQuery = useAssetsMaps();
   const statusQuery = useAssetsStatus();
   const maps = mapsQuery.data ?? [];
@@ -150,15 +156,15 @@ export function AssetsManager() {
                     type="button"
                     onClick={() => setSelectedId(map.id)}
                     className={cn(
-                      "flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors",
+                      "flex w-full items-center gap-2 px-3 py-2 text-left font-heading text-sm font-semibold tracking-wide uppercase transition-colors",
                       active
-                        ? "bg-primary/10 font-medium text-primary"
+                        ? "clip-slash bg-primary/15 text-primary"
                         : "text-muted-foreground hover:bg-accent hover:text-foreground",
                     )}
                   >
                     <MapIcon className="size-4 shrink-0" aria-hidden />
                     <span className="min-w-0 flex-1 truncate">{map.name}</span>
-                    <span className="text-xs tabular-nums">
+                    <span className="font-mono text-xs tabular-nums">
                       {map.placedCount}/{map.screenshotCount}
                     </span>
                   </button>
@@ -167,7 +173,7 @@ export function AssetsManager() {
             })}
             {maps.length === 0 && (
               <li className="px-3 py-4 text-center text-xs text-muted-foreground">
-                Aucune map — crée la première.
+                {t("mapsEmpty")}
               </li>
             )}
           </ul>
@@ -177,22 +183,16 @@ export function AssetsManager() {
       {/* Détail map */}
       <div className="min-h-0 flex-1 space-y-6 overflow-y-auto p-4 sm:p-6">
         {!writable && (
-          <div className="flex items-start gap-2.5 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3 text-sm text-amber-200">
+          <div className="clip-notch-sm flex items-start gap-2.5 border border-destructive/30 bg-destructive/10 p-3 text-sm">
             <Lock className="mt-0.5 size-4 shrink-0" aria-hidden />
-            <p>
-              Cet hébergement ne permet pas d&apos;écrire les fichiers (système
-              en lecture seule). Importe les assets <strong>en local</strong>,
-              puis <code>git commit + push</code> pour les déployer.
-            </p>
+            <p>{t("readonly")}</p>
           </div>
         )}
 
         {selected ? (
           <>
             <div>
-              <h1 className="font-heading text-2xl font-bold">
-                {selected.name}
-              </h1>
+              <h1 className="display text-3xl">{selected.name}</h1>
               <p className="font-mono text-xs text-muted-foreground">
                 Maps/{selected.assetDir}/
               </p>
@@ -205,7 +205,7 @@ export function AssetsManager() {
           !mapsQuery.isLoading && (
             <div className="flex h-full flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
               <FolderOpen className="size-8" aria-hidden />
-              Crée ta première map pour commencer.
+              {t("mapsEmpty")}
             </div>
           )
         )}

@@ -18,7 +18,7 @@ export default auth((request) => {
   if (!request.auth?.user) {
     if (isApi) {
       return NextResponse.json(
-        { error: "Authentification requise" },
+        { error: "Authentication required" },
         { status: 401 },
       );
     }
@@ -29,7 +29,7 @@ export default auth((request) => {
 
   if (request.auth.user.role !== "ADMIN") {
     if (isApi) {
-      return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
+      return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
     return NextResponse.rewrite(new URL("/403", request.nextUrl), {
       status: 403,

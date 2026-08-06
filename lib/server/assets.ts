@@ -126,15 +126,12 @@ export async function serveAssetFile(relativePath: string): Promise<Response> {
   const contentType =
     ASSET_CONTENT_TYPES[path.extname(relativePath).toLowerCase()];
   if (!contentType) {
-    return Response.json(
-      { error: "Type de fichier non servi" },
-      { status: 404 },
-    );
+    return Response.json({ error: "File type not served" }, { status: 404 });
   }
 
   const absolutePath = resolveAssetPath(relativePath);
   if (!absolutePath) {
-    return Response.json({ error: "Chemin invalide" }, { status: 400 });
+    return Response.json({ error: "Invalid path" }, { status: 400 });
   }
 
   try {
@@ -152,6 +149,6 @@ export async function serveAssetFile(relativePath: string): Promise<Response> {
       },
     });
   } catch {
-    return Response.json({ error: "Fichier introuvable" }, { status: 404 });
+    return Response.json({ error: "File not found" }, { status: 404 });
   }
 }

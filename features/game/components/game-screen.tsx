@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Crosshair, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 
@@ -19,6 +20,7 @@ import { SummaryScreen } from "./summary-screen";
  * validation → résultat) → récapitulatif → rejouer.
  */
 export function GameScreen() {
+  const t = useTranslations("play.round");
   const phase = useGameStore((s) => s.phase);
   const session = useGameStore((s) => s.session);
   const currentRound = useGameStore((s) => s.currentRound);
@@ -56,15 +58,18 @@ export function GameScreen() {
 
       {/* Chrome de la manche — aucune info sur la map, seulement la progression */}
       <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
-        <span className="glass rounded-full px-3 py-1.5 text-xs font-medium tabular-nums">
-          Manche {currentRound.index}/{session.roundCount}
+        <span className="clip-slash bg-foreground px-3 py-1.5 font-heading text-xs font-bold tracking-wider text-background uppercase italic tabular-nums">
+          {t("chip", {
+            index: currentRound.index,
+            total: session.roundCount,
+          })}
         </span>
         <Button
           variant="ghost"
           size="icon-sm"
           onClick={backToIdle}
-          aria-label="Abandonner la partie"
-          className="glass rounded-full"
+          aria-label={t("quit")}
+          className="glass"
         >
           <X />
         </Button>
@@ -86,7 +91,7 @@ export function GameScreen() {
               onClick={() => setPanelOpen(true)}
             >
               <Crosshair data-icon="inline-start" />
-              Deviner
+              {t("guess")}
             </Button>
           </motion.div>
         )}

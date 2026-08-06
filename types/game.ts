@@ -26,15 +26,3 @@ export const SESSION_STATUSES = [
 ] as const;
 export const sessionStatusSchema = z.enum(SESSION_STATUSES);
 export type SessionStatus = z.infer<typeof sessionStatusSchema>;
-
-/** Libellés d'affichage (fr) */
-export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
-  EASY: "Facile",
-  MEDIUM: "Moyen",
-  HARD: "Difficile",
-  IMPOSSIBLE: "Impossible",
-};
-
-export const GAME_MODE_LABELS: Record<GameMode, string> = {
-  CLASSIC: "Classique",
-};

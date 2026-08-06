@@ -1,6 +1,7 @@
 "use client";
 
 import { RefreshCw } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -32,13 +33,19 @@ export function MapSelector({
   selectedMapId,
   onSelect,
 }: MapSelectorProps) {
+  const t = useTranslations("workshop");
   const sync = useSyncAssets();
 
   function handleSync() {
     sync.mutate(undefined, {
       onSuccess: (summary) => {
-        toast.success("Assets synchronisés", {
-          description: `${summary.maps} map(s), ${summary.floors} étage(s), ${summary.screenshotsTotal} screenshot(s) dont ${summary.screenshotsCreated} nouveau(x).`,
+        toast.success(t("syncSuccess"), {
+          description: t("syncSummary", {
+            maps: summary.maps,
+            floors: summary.floors,
+            total: summary.screenshotsTotal,
+            created: summary.screenshotsCreated,
+          }),
         });
         summary.warnings.forEach((warning) => toast.warning(warning));
       },
@@ -58,8 +65,8 @@ export function MapSelector({
           if (map) onSelect(map);
         }}
       >
-        <SelectTrigger className="w-full flex-1" aria-label="Choisir une map">
-          <SelectValue placeholder="Choisir une map" />
+        <SelectTrigger className="w-full flex-1" aria-label={t("mapSelector")}>
+          <SelectValue />
         </SelectTrigger>
         <SelectContent>
           {items.map((item) => (
@@ -78,7 +85,7 @@ export function MapSelector({
               size="icon"
               onClick={handleSync}
               disabled={sync.isPending}
-              aria-label="Synchroniser les assets"
+              aria-label={t("sync")}
             >
               <RefreshCw
                 className={sync.isPending ? "animate-spin" : undefined}
@@ -86,7 +93,7 @@ export function MapSelector({
             </Button>
           }
         />
-        <TooltipContent>Synchroniser le dossier d&apos;assets</TooltipContent>
+        <TooltipContent>{t("syncTooltip")}</TooltipContent>
       </Tooltip>
     </div>
   );

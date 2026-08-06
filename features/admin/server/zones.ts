@@ -30,7 +30,7 @@ export async function createZone(
   name: string,
 ): Promise<AdminZone> {
   const map = await prisma.gameMap.findUnique({ where: { id: mapId } });
-  if (!map) throw new AdminError(404, "Map introuvable");
+  if (!map) throw new AdminError(404, "Map not found");
 
   try {
     const zone = await prisma.zone.create({
@@ -40,10 +40,7 @@ export async function createZone(
     return serializeZone(zone);
   } catch (error) {
     if (isUniqueViolation(error)) {
-      throw new AdminError(
-        409,
-        `La zone « ${name} » existe déjà sur cette map`,
-      );
+      throw new AdminError(409, `Zone “${name}” already exists on this map`);
     }
     throw error;
   }
@@ -59,16 +56,13 @@ export async function renameZone(id: string, name: string): Promise<AdminZone> {
     return serializeZone(zone);
   } catch (error) {
     if (isUniqueViolation(error)) {
-      throw new AdminError(
-        409,
-        `La zone « ${name} » existe déjà sur cette map`,
-      );
+      throw new AdminError(409, `Zone “${name}” already exists on this map`);
     }
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2025"
     ) {
-      throw new AdminError(404, "Zone introuvable");
+      throw new AdminError(404, "Zone not found");
     }
     throw error;
   }
@@ -83,7 +77,7 @@ export async function deleteZone(id: string): Promise<void> {
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2025"
     ) {
-      throw new AdminError(404, "Zone introuvable");
+      throw new AdminError(404, "Zone not found");
     }
     throw error;
   }

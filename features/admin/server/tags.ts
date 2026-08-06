@@ -31,7 +31,7 @@ export async function createTag(name: string): Promise<AdminTag> {
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
     ) {
-      throw new AdminError(409, `Le tag « ${normalized} » existe déjà`);
+      throw new AdminError(409, `Tag “${normalized}” already exists`);
     }
     throw error;
   }
@@ -46,7 +46,7 @@ export async function deleteTag(id: string): Promise<void> {
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2025"
     ) {
-      throw new AdminError(404, "Tag introuvable");
+      throw new AdminError(404, "Tag not found");
     }
     throw error;
   }

@@ -1,7 +1,9 @@
 "use client";
 
 import { Loader2, Play } from "lucide-react";
+import { useTranslations } from "next-intl";
 
+import { Artwork } from "@/components/artwork";
 import { FadeIn } from "@/components/motion/fade-in";
 import { Button } from "@/components/ui/button";
 
@@ -17,40 +19,49 @@ interface StartScreenProps {
  * reconnaître la map fait partie du défi.
  */
 export function StartScreen({ isStarting, onStart }: StartScreenProps) {
+  const t = useTranslations("play.start");
+
   return (
-    <div className="bg-grid mask-fade-edges relative flex h-full flex-col items-center justify-center gap-8 px-4 text-center">
-      <div
-        className="absolute top-1/4 left-1/2 size-[28rem] -translate-x-1/2 rounded-full bg-primary/15 blur-[120px]"
-        aria-hidden
-      />
-      <FadeIn>
-        <div className="relative space-y-3">
-          <h1 className="font-heading text-4xl font-bold tracking-tight text-balance sm:text-5xl">
-            Reconnais la map.
+    <div className="bg-grid mask-fade-edges relative grid h-full items-center overflow-hidden px-4 sm:px-8 lg:grid-cols-[1.2fr_1fr]">
+      <div className="relative z-10 mx-auto max-w-2xl space-y-8 text-center lg:text-left">
+        <FadeIn>
+          <h1 className="display text-5xl text-balance sm:text-7xl">
+            {t("titleA")}
             <br />
-            <span className="text-gradient-neon">Retrouve l&apos;endroit.</span>
+            <span className="text-primary">{t("titleB")}</span>
           </h1>
-          <p className="mx-auto max-w-md text-sm text-muted-foreground sm:text-base">
-            {GAME_CONFIG.roundsPerSession} manches. Un screenshot à chaque fois,
-            sans indice : à toi de deviner la map, l&apos;étage et la position
-            exacte.
+        </FadeIn>
+        <FadeIn delay={0.1}>
+          <p className="mx-auto max-w-md text-sm text-balance text-muted-foreground sm:text-base lg:mx-0">
+            {t("subtitle", { rounds: GAME_CONFIG.roundsPerSession })}
           </p>
+        </FadeIn>
+        <FadeIn delay={0.18}>
+          <Button
+            size="lg"
+            className="glow-primary px-10 text-base"
+            onClick={onStart}
+            disabled={isStarting}
+          >
+            {isStarting ? (
+              <Loader2 className="animate-spin" data-icon="inline-start" />
+            ) : (
+              <Play data-icon="inline-start" />
+            )}
+            {t("cta")}
+          </Button>
+        </FadeIn>
+      </div>
+
+      {/* Slot d'illustration configurable (branding.json) */}
+      <FadeIn delay={0.15} className="hidden h-full lg:block">
+        <div className="relative flex h-full items-end">
+          <div
+            className="stripes-primary absolute inset-x-0 top-1/4 bottom-0 -skew-x-6 opacity-10"
+            aria-hidden
+          />
+          <Artwork slot="play.start" className="relative h-4/5 w-full" />
         </div>
-      </FadeIn>
-      <FadeIn delay={0.15}>
-        <Button
-          size="lg"
-          className="glow-primary relative px-10 text-base"
-          onClick={onStart}
-          disabled={isStarting}
-        >
-          {isStarting ? (
-            <Loader2 className="animate-spin" data-icon="inline-start" />
-          ) : (
-            <Play data-icon="inline-start" />
-          )}
-          Lancer une partie
-        </Button>
       </FadeIn>
     </div>
   );

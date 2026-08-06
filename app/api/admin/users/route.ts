@@ -6,10 +6,7 @@ import { createUser, listUsers } from "@/features/admin/server/users";
 export async function GET(request: Request) {
   const session = await auth();
   if (!session?.user) {
-    return Response.json(
-      { error: "Authentification requise" },
-      { status: 401 },
-    );
+    return Response.json({ error: "Authentication required" }, { status: 401 });
   }
   const search = new URL(request.url).searchParams.get("search") ?? "";
   const users = await listUsers(search, session.user.id);
@@ -19,15 +16,12 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user) {
-    return Response.json(
-      { error: "Authentification requise" },
-      { status: 401 },
-    );
+    return Response.json({ error: "Authentication required" }, { status: 401 });
   }
   const body = await request.json().catch(() => null);
   const parsed = createUserSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json({ error: "Requête invalide" }, { status: 400 });
+    return Response.json({ error: "Invalid request" }, { status: 400 });
   }
   try {
     const user = await createUser(parsed.data, session.user.id);

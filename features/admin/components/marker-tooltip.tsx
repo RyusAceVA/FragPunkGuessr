@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +27,8 @@ export function MarkerTooltip({
   y,
   containerWidth,
 }: MarkerTooltipProps) {
+  const t = useTranslations("workshop");
+  const tDiff = useTranslations("difficulty");
   const styles = difficultyStyle(screenshot.difficulty);
   const clampedX = Math.min(
     Math.max(x, 110),
@@ -33,14 +37,14 @@ export function MarkerTooltip({
 
   return (
     <div
-      className="pointer-events-none absolute z-30 w-52 -translate-x-1/2 overflow-hidden rounded-lg border border-border bg-popover shadow-xl"
+      className="panel clip-notch-sm pointer-events-none absolute z-30 w-52 -translate-x-1/2 overflow-hidden shadow-xl"
       style={{ left: clampedX, top: y, translate: "0 calc(-100% - 14px)" }}
       role="tooltip"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- asset locale servie par l'API, pas d'optimisation Next voulue */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- asset locale servie par l'API */}
       <img
         src={assetUrl(screenshot.assetPath)}
-        alt={`Screenshot ${screenshot.code}`}
+        alt={t("markerAria", { code: screenshot.code })}
         className="h-28 w-full bg-black/50 object-cover"
         loading="lazy"
         decoding="async"
@@ -51,15 +55,12 @@ export function MarkerTooltip({
             #{screenshot.code}
           </span>
           <Badge variant="secondary" className="gap-1.5 text-[10px]">
-            <span
-              className={cn("size-1.5 rounded-full", styles.dot)}
-              aria-hidden
-            />
-            {styles.label}
+            <span className={cn("size-1.5", styles.dot)} aria-hidden />
+            {tDiff(screenshot.difficulty ?? "UNSET")}
           </Badge>
         </div>
         <p className="truncate text-xs text-muted-foreground">
-          {screenshot.zoneName ?? "Zone non renseignée"}
+          {screenshot.zoneName ?? t("zoneUnset")}
         </p>
       </div>
     </div>

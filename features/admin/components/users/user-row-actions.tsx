@@ -1,6 +1,7 @@
 "use client";
 
 import { KeyRound, Loader2, Trash2, UserCheck, UserX } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -25,6 +26,7 @@ import type { AdminUser } from "../../types";
 
 /** Réinitialisation du mot de passe (dialog). */
 function ResetPasswordDialog({ user }: { user: AdminUser }) {
+  const t = useTranslations("users");
   const update = useUpdateUser();
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState("");
@@ -32,14 +34,14 @@ function ResetPasswordDialog({ user }: { user: AdminUser }) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (password.length < 8) {
-      toast.error("8 caractères minimum");
+      toast.error(t("passwordHint"));
       return;
     }
     update.mutate(
       { id: user.id, input: { password } },
       {
         onSuccess: () => {
-          toast.success(`Mot de passe de ${user.username} réinitialisé`);
+          toast.success(t("resetDone", { name: user.username }));
           setOpen(false);
           setPassword("");
         },
@@ -57,31 +59,28 @@ function ResetPasswordDialog({ user }: { user: AdminUser }) {
               variant="ghost"
               size="icon-sm"
               onClick={() => setOpen(true)}
-              aria-label={`Réinitialiser le mot de passe de ${user.username}`}
+              aria-label={t("resetPassword", { name: user.username })}
             >
               <KeyRound />
             </Button>
           }
         />
-        <TooltipContent>Réinitialiser le mot de passe</TooltipContent>
+        <TooltipContent>{t("resetTooltip")}</TooltipContent>
       </Tooltip>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Nouveau mot de passe — {user.username}</DialogTitle>
-          <DialogDescription>
-            Note-le avant de valider : il ne sera plus affiché (seul son hash
-            Argon2id est conservé).
-          </DialogDescription>
+          <DialogTitle>{t("resetTitle", { name: user.username })}</DialogTitle>
+          <DialogDescription>{t("resetDescription")}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-1.5">
-            <Label htmlFor={`rp-${user.id}`}>Mot de passe</Label>
+            <Label htmlFor={`rp-${user.id}`}>{t("password")}</Label>
             <Input
               id={`rp-${user.id}`}
               type="text"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="8 caractères minimum"
+              placeholder={t("passwordHint")}
               autoComplete="new-password"
             />
           </div>
@@ -89,7 +88,7 @@ function ResetPasswordDialog({ user }: { user: AdminUser }) {
             {update.isPending && (
               <Loader2 className="animate-spin" data-icon="inline-start" />
             )}
-            Réinitialiser
+            {t("resetSubmit")}
           </Button>
         </form>
       </DialogContent>
@@ -99,6 +98,8 @@ function ResetPasswordDialog({ user }: { user: AdminUser }) {
 
 /** Suppression avec confirmation. */
 function DeleteUserDialog({ user }: { user: AdminUser }) {
+  const t = useTranslations("users");
+  const tCommon = useTranslations("common");
   const remove = useDeleteUser();
   const [open, setOpen] = useState(false);
 
@@ -112,7 +113,7 @@ function DeleteUserDialog({ user }: { user: AdminUser }) {
               size="icon-sm"
               onClick={() => setOpen(true)}
               disabled={user.isSelf}
-              aria-label={`Supprimer ${user.username}`}
+              aria-label={t("deleteUser", { name: user.username })}
               className="text-muted-foreground hover:text-destructive"
             >
               <Trash2 />
@@ -120,15 +121,14 @@ function DeleteUserDialog({ user }: { user: AdminUser }) {
           }
         />
         <TooltipContent>
-          {user.isSelf ? "Impossible sur ton propre compte" : "Supprimer"}
+          {user.isSelf ? t("selfBlocked") : t("deleteTooltip")}
         </TooltipContent>
       </Tooltip>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Supprimer {user.username} ?</DialogTitle>
+          <DialogTitle>{t("deleteTitle", { name: user.username })}</DialogTitle>
           <DialogDescription>
-            Le compte {user.email} sera définitivement supprimé. Ses parties
-            anonymisées sont conservées.
+            {t("deleteDescription", { email: user.email })}
           </DialogDescription>
         </DialogHeader>
         <div className="flex gap-2">
@@ -137,7 +137,7 @@ function DeleteUserDialog({ user }: { user: AdminUser }) {
             className="flex-1"
             onClick={() => setOpen(false)}
           >
-            Annuler
+            {tCommon("cancel")}
           </Button>
           <Button
             variant="destructive"
@@ -148,7 +148,7 @@ function DeleteUserDialog({ user }: { user: AdminUser }) {
                 { id: user.id },
                 {
                   onSuccess: () => {
-                    toast.success(`Compte ${user.email} supprimé`);
+                    toast.success(t("deleteDone", { email: user.email }));
                     setOpen(false);
                   },
                   onError: (error) => toast.error(error.message),
@@ -159,7 +159,7 @@ function DeleteUserDialog({ user }: { user: AdminUser }) {
             {remove.isPending && (
               <Loader2 className="animate-spin" data-icon="inline-start" />
             )}
-            Supprimer
+            {t("deleteConfirm")}
           </Button>
         </div>
       </DialogContent>
@@ -169,6 +169,7 @@ function DeleteUserDialog({ user }: { user: AdminUser }) {
 
 /** Actions d'une ligne : activer/désactiver, reset mot de passe, supprimer. */
 export function UserRowActions({ user }: { user: AdminUser }) {
+  const t = useTranslations("users");
   const update = useUpdateUser();
 
   function toggleActive() {
@@ -178,8 +179,8 @@ export function UserRowActions({ user }: { user: AdminUser }) {
         onSuccess: (updated) =>
           toast.success(
             updated.isActive
-              ? `Compte ${updated.username} réactivé`
-              : `Compte ${updated.username} désactivé`,
+              ? t("reactivated", { name: updated.username })
+              : t("deactivated", { name: updated.username }),
           ),
         onError: (error) => toast.error(error.message),
       },
@@ -198,8 +199,8 @@ export function UserRowActions({ user }: { user: AdminUser }) {
               disabled={update.isPending || user.isSelf}
               aria-label={
                 user.isActive
-                  ? `Désactiver ${user.username}`
-                  : `Réactiver ${user.username}`
+                  ? t("deactivate", { name: user.username })
+                  : t("reactivate", { name: user.username })
               }
             >
               {user.isActive ? <UserX /> : <UserCheck />}
@@ -208,10 +209,10 @@ export function UserRowActions({ user }: { user: AdminUser }) {
         />
         <TooltipContent>
           {user.isSelf
-            ? "Impossible sur ton propre compte"
+            ? t("selfBlocked")
             : user.isActive
-              ? "Désactiver (connexion refusée)"
-              : "Réactiver"}
+              ? t("deactivateHint")
+              : t("reactivateHint")}
         </TooltipContent>
       </Tooltip>
       <ResetPasswordDialog user={user} />

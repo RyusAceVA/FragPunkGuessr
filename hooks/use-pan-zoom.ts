@@ -173,7 +173,12 @@ export function usePanZoom({
     (e: React.PointerEvent<HTMLDivElement>) => {
       if (e.button !== 0 && e.button !== 1) return;
       e.preventDefault();
-      e.currentTarget.setPointerCapture(e.pointerId);
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch {
+        // Pointeur déjà inactif (relâché entre deux événements) : le drag
+        // fonctionne quand même, seule la capture est perdue.
+      }
       const { tx, ty } = transformRef.current;
       panRef.current = {
         pointerId: e.pointerId,

@@ -12,7 +12,7 @@ export async function GET(
   const { id } = await params;
   const assetPath = await getRoundImagePath(id);
   if (!assetPath) {
-    return Response.json({ error: "Manche introuvable" }, { status: 404 });
+    return Response.json({ error: "Round not found" }, { status: 404 });
   }
   return serveAssetFile(assetPath);
 }

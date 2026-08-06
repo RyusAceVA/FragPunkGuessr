@@ -1,12 +1,12 @@
 "use client";
 
 import { Search, ShieldCheck } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -33,6 +34,7 @@ import { UserRowActions } from "./user-row-actions";
 const ROLE_ITEMS = USER_ROLES.map((role) => ({ label: role, value: role }));
 
 function RoleSelect({ user }: { user: AdminUser }) {
+  const t = useTranslations("users");
   const update = useUpdateUser();
   return (
     <Select
@@ -45,7 +47,10 @@ function RoleSelect({ user }: { user: AdminUser }) {
           {
             onSuccess: (updated) =>
               toast.success(
-                `${updated.username} est maintenant ${updated.role}`,
+                t("roleChanged", {
+                  name: updated.username,
+                  role: updated.role,
+                }),
               ),
             onError: (error) => toast.error(error.message),
           },
@@ -54,7 +59,7 @@ function RoleSelect({ user }: { user: AdminUser }) {
     >
       <SelectTrigger
         size="sm"
-        aria-label={`Rôle de ${user.username}`}
+        aria-label={t("roleAria", { name: user.username })}
         className="w-28"
       >
         <SelectValue />
@@ -76,6 +81,7 @@ function RoleSelect({ user }: { user: AdminUser }) {
  * suppression — avec garde-fous (dernier admin, propre compte) côté serveur.
  */
 export function UsersManager() {
+  const t = useTranslations("users");
   const [search, setSearch] = useState("");
   const usersQuery = useAdminUsers(search);
   const users = usersQuery.data ?? [];
@@ -84,10 +90,8 @@ export function UsersManager() {
     <div className="mx-auto w-full max-w-4xl space-y-4 p-4 sm:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold">Utilisateurs</h1>
-          <p className="text-sm text-muted-foreground">
-            Comptes et rôles — les mots de passe sont hashés en Argon2id.
-          </p>
+          <h1 className="display text-3xl">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
         <UserCreateDialog />
       </div>
@@ -100,9 +104,9 @@ export function UsersManager() {
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Rechercher par email ou nom…"
+          placeholder={t("searchPlaceholder")}
           className="pl-8"
-          aria-label="Rechercher un utilisateur"
+          aria-label={t("searchAria")}
         />
       </div>
 
@@ -112,14 +116,14 @@ export function UsersManager() {
           <Skeleton className="h-12" />
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
+        <div className="panel clip-notch overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Utilisateur</TableHead>
-                <TableHead>Rôle</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("colUser")}</TableHead>
+                <TableHead>{t("colRole")}</TableHead>
+                <TableHead>{t("colStatus")}</TableHead>
+                <TableHead className="text-right">{t("colActions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -141,7 +145,7 @@ export function UsersManager() {
                           )}
                           {user.isSelf && (
                             <Badge variant="outline" className="text-[10px]">
-                              Toi
+                              {t("you")}
                             </Badge>
                           )}
                         </p>
@@ -156,9 +160,9 @@ export function UsersManager() {
                   </TableCell>
                   <TableCell>
                     {user.isActive ? (
-                      <Badge variant="secondary">Actif</Badge>
+                      <Badge variant="signal">{t("active")}</Badge>
                     ) : (
-                      <Badge variant="destructive">Désactivé</Badge>
+                      <Badge variant="destructive">{t("disabled")}</Badge>
                     )}
                   </TableCell>
                   <TableCell>
@@ -172,7 +176,7 @@ export function UsersManager() {
                     colSpan={4}
                     className="py-8 text-center text-sm text-muted-foreground"
                   >
-                    Aucun utilisateur ne correspond.
+                    {t("empty")}
                   </TableCell>
                 </TableRow>
               )}

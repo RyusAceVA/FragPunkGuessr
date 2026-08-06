@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, Plus, UserPlus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -30,6 +31,7 @@ const ROLE_ITEMS = USER_ROLES.map((role) => ({ label: role, value: role }));
 
 /** Création d'un compte (ex. l'accès administrateur du client). */
 export function UserCreateDialog() {
+  const t = useTranslations("users");
   const create = useCreateUser();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -47,13 +49,15 @@ export function UserCreateDialog() {
       role,
     });
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Formulaire invalide");
+      setError(parsed.error.issues[0]?.message ?? "Invalid form");
       return;
     }
     setError(null);
     create.mutate(parsed.data, {
       onSuccess: (user) => {
-        toast.success(`Compte ${user.email} créé (${user.role})`);
+        toast.success(
+          t("createdToast", { email: user.email, role: user.role }),
+        );
         setOpen(false);
         setEmail("");
         setUsername("");
@@ -68,52 +72,48 @@ export function UserCreateDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <Button className="glow-primary" onClick={() => setOpen(true)}>
         <UserPlus data-icon="inline-start" />
-        Créer un utilisateur
+        {t("create")}
       </Button>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Nouvel utilisateur</DialogTitle>
-          <DialogDescription>
-            Le mot de passe est hashé (Argon2id) — note-le avant de valider, il
-            ne sera plus affiché.
-          </DialogDescription>
+          <DialogTitle>{t("createTitle")}</DialogTitle>
+          <DialogDescription>{t("createDescription")}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-3" noValidate>
           <div className="space-y-1.5">
-            <Label htmlFor="nu-email">Email</Label>
+            <Label htmlFor="nu-email">{t("email")}</Label>
             <Input
               id="nu-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="client@exemple.com"
+              placeholder="client@example.com"
               autoComplete="off"
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="nu-username">Nom d&apos;utilisateur</Label>
+            <Label htmlFor="nu-username">{t("username")}</Label>
             <Input
               id="nu-username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="client"
               autoComplete="off"
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="nu-password">Mot de passe</Label>
+            <Label htmlFor="nu-password">{t("password")}</Label>
             <Input
               id="nu-password"
               type="text"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="8 caractères minimum"
+              placeholder={t("passwordHint")}
               autoComplete="new-password"
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="nu-role">Rôle</Label>
+            <Label htmlFor="nu-role">{t("role")}</Label>
             <Select
               items={ROLE_ITEMS}
               value={role}
@@ -144,7 +144,7 @@ export function UserCreateDialog() {
             ) : (
               <Plus data-icon="inline-start" />
             )}
-            Créer le compte
+            {t("createSubmit")}
           </Button>
         </form>
       </DialogContent>

@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const parsed = createTagSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json({ error: "Requête invalide" }, { status: 400 });
+    return Response.json({ error: "Invalid request" }, { status: 400 });
   }
   try {
     const tag = await createTag(parsed.data.name);

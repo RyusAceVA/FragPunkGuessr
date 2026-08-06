@@ -1,6 +1,7 @@
 "use client";
 
 import { Maximize, Minus, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import { GuessMarker } from "./guess-marker";
  * pan/zoom identiques au reste de l'app (molette centrée curseur).
  */
 export function GuessMap({ floor }: { floor: GameFloor }) {
+  const t = useTranslations("play.panel");
   const pin = useGameStore((s) => s.pin);
   const placePin = useGameStore((s) => s.placePin);
 
@@ -58,7 +60,7 @@ export function GuessMap({ floor }: { floor: GameFloor }) {
         {/* eslint-disable-next-line @next/next/no-img-element -- plan rendu à taille native dans la couche zoomée */}
         <img
           src={assetUrl(floor.assetPath)}
-          alt={`Plan ${floor.name}`}
+          alt={floor.name}
           width={floor.width}
           height={floor.height}
           draggable={false}
@@ -79,12 +81,12 @@ export function GuessMap({ floor }: { floor: GameFloor }) {
       </div>
 
       {/* Contrôles de zoom */}
-      <div className="glass absolute right-2 bottom-2 z-20 flex items-center gap-0.5 rounded-lg p-0.5">
+      <div className="glass absolute right-2 bottom-2 z-20 flex items-center gap-0.5 p-0.5">
         <Button
           variant="ghost"
           size="icon-sm"
           onClick={zoomOut}
-          aria-label="Zoom arrière"
+          aria-label={t("zoomOut")}
         >
           <Minus />
         </Button>
@@ -92,7 +94,7 @@ export function GuessMap({ floor }: { floor: GameFloor }) {
           variant="ghost"
           size="icon-sm"
           onClick={zoomIn}
-          aria-label="Zoom avant"
+          aria-label={t("zoomIn")}
         >
           <Plus />
         </Button>
@@ -100,15 +102,15 @@ export function GuessMap({ floor }: { floor: GameFloor }) {
           variant="ghost"
           size="icon-sm"
           onClick={fit}
-          aria-label="Ajuster à l'écran"
+          aria-label={t("fit")}
         >
           <Maximize />
         </Button>
       </div>
 
       {!pin && (
-        <p className="glass pointer-events-none absolute bottom-3 left-1/2 z-20 -translate-x-1/2 rounded-full px-3 py-1.5 text-xs whitespace-nowrap text-muted-foreground">
-          Clique sur le plan pour poser ton pin
+        <p className="glass pointer-events-none absolute bottom-3 left-1/2 z-20 -translate-x-1/2 px-3 py-1.5 text-xs whitespace-nowrap text-muted-foreground">
+          {t("placeHint")}
         </p>
       )}
     </div>

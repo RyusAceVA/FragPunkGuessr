@@ -13,20 +13,23 @@ function safeCallbackUrl(raw: unknown): string {
   return "/admin";
 }
 
+/** Codes d'erreur traduits côté client (messages/<locale>.json). */
+export type AuthErrorCode = "invalid" | "incorrect";
+
 /**
  * Server Action de connexion (utilisée par useActionState).
- * Retourne un message d'erreur, ou redirige en cas de succès.
+ * Retourne un CODE d'erreur i18n, ou redirige en cas de succès.
  */
 export async function authenticate(
-  _previousState: string | undefined,
+  _previousState: AuthErrorCode | undefined,
   formData: FormData,
-): Promise<string | undefined> {
+): Promise<AuthErrorCode | undefined> {
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
   });
   if (!parsed.success) {
-    return "Email ou mot de passe invalide.";
+    return "invalid";
   }
 
   try {
@@ -38,8 +41,8 @@ export async function authenticate(
     return undefined;
   } catch (error) {
     if (error instanceof AuthError) {
-      // Message volontairement générique : ne révèle pas si l'email existe
-      return "Email ou mot de passe incorrect.";
+      // Code volontairement générique : ne révèle pas si l'email existe
+      return "incorrect";
     }
     // NEXT_REDIRECT (succès) et erreurs inattendues doivent se propager
     throw error;

@@ -1,6 +1,7 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
 
@@ -12,6 +13,7 @@ export function ScreenshotPreview({
 }: {
   screenshot: AdminScreenshot;
 }) {
+  const t = useTranslations("workshop");
   const url = assetUrl(screenshot.assetPath);
 
   return (
@@ -20,17 +22,17 @@ export function ScreenshotPreview({
         href={url}
         target="_blank"
         rel="noreferrer"
-        className="group relative block overflow-hidden rounded-lg"
-        title="Ouvrir l'original dans un nouvel onglet"
+        className="clip-notch-sm group relative block overflow-hidden"
+        title={t("openOriginal")}
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- asset locale servie par l'API */}
         <img
           src={url}
-          alt={`Screenshot ${screenshot.code}`}
+          alt={t("markerAria", { code: screenshot.code })}
           className="aspect-video w-full bg-black/50 object-contain"
           decoding="async"
         />
-        <span className="absolute right-2 bottom-2 rounded-md bg-background/70 p-1.5 opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
+        <span className="absolute right-2 bottom-2 rounded-sm bg-background/70 p-1.5 opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
           <ExternalLink className="size-3.5" aria-hidden />
         </span>
       </a>
@@ -38,8 +40,8 @@ export function ScreenshotPreview({
         <span className="font-mono text-sm font-semibold">
           #{screenshot.code}
         </span>
-        <Badge variant={isPlaced(screenshot) ? "secondary" : "outline"}>
-          {isPlaced(screenshot) ? "Placé" : "À placer"}
+        <Badge variant={isPlaced(screenshot) ? "signal" : "outline"}>
+          {isPlaced(screenshot) ? t("badgePlaced") : t("badgeToPlace")}
         </Badge>
       </div>
     </div>

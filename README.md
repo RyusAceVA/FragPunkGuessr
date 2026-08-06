@@ -9,7 +9,10 @@ points selon sa précision.
 ## Stack
 
 - **Next.js 15** (App Router, Turbopack) + **React 19** + **TypeScript** strict
-- **TailwindCSS v4** + **shadcn/ui** — thème dark néon custom
+- **TailwindCSS v4** + **shadcn/ui** — Design System « Ink & Signal »
+  documenté dans [`DESIGN.md`](DESIGN.md)
+- **next-intl** (sans routing) — interface **EN** (défaut) / **FR**, locale
+  persistée en cookie ; catalogues dans `messages/`
 - **PostgreSQL** (Neon en production) via **Prisma 7** (driver adapter `pg`)
 - **Auth.js v5** (NextAuth) — sessions JWT en cookies httpOnly, mots de passe
   hashés **Argon2id**
@@ -173,3 +176,19 @@ Maps/<NomDeLaMap>/
 **Règles de dépendance** : une feature importe `components/`, `lib/`,
 `types/`, `hooks/` — jamais une autre feature. Chaque feature expose son API
 publique via son `index.ts`.
+
+---
+
+## Design System & i18n
+
+- **[`DESIGN.md`](DESIGN.md)** documente l'identité « Ink & Signal » :
+  palette, typographies, grille, notches, ombres, textures, motion, icônes
+  et inventaire des composants — suffisant pour construire tout écran.
+- **Illustrations sans toucher au code** : éditer
+  `public/branding/branding.json` (slots `home.hero`, `play.start`…) avec
+  des URLs d'images, par ex. celles de
+  [fragpunk-assets](https://github.com/RyusAceVA/fragpunk-assets).
+- **i18n** : aucun texte en dur dans les composants — tout vient de
+  `messages/<locale>.json` (namespaces + pluriels ICU). Ajouter une langue =
+  créer `messages/de.json` + ajouter le code dans `i18n/config.ts`.
+  Les noms de maps, d'étages et les assets ne sont **jamais** traduits.

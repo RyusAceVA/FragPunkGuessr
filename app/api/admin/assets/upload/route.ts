@@ -16,8 +16,7 @@ export async function POST(request: Request) {
     return Response.json(
       {
         ok: false,
-        error:
-          "Système de fichiers en lecture seule — importe en local puis commit + push",
+        error: "Read-only file system — import locally, then commit + push",
       },
       { status: 409 },
     );
@@ -30,16 +29,16 @@ export async function POST(request: Request) {
 
   if (typeof mapId !== "string" || !kind.success || !(file instanceof File)) {
     return Response.json(
-      { ok: false, error: "Requête invalide" },
+      { ok: false, error: "Invalid request" },
       { status: 400 },
     );
   }
   if (file.size === 0) {
-    return Response.json({ ok: false, error: "Fichier vide" }, { status: 422 });
+    return Response.json({ ok: false, error: "Empty file" }, { status: 422 });
   }
   if (file.size > MAX_UPLOAD_BYTES) {
     return Response.json(
-      { ok: false, error: "Fichier trop lourd (25 Mo maximum)" },
+      { ok: false, error: "File too large (25 MB max)" },
       { status: 413 },
     );
   }

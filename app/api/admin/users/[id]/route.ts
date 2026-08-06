@@ -8,16 +8,13 @@ type Params = { params: Promise<{ id: string }> };
 export async function PATCH(request: Request, { params }: Params) {
   const session = await auth();
   if (!session?.user) {
-    return Response.json(
-      { error: "Authentification requise" },
-      { status: 401 },
-    );
+    return Response.json({ error: "Authentication required" }, { status: 401 });
   }
   const { id } = await params;
   const body = await request.json().catch(() => null);
   const parsed = updateUserSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json({ error: "Requête invalide" }, { status: 400 });
+    return Response.json({ error: "Invalid request" }, { status: 400 });
   }
   try {
     const user = await updateUser(id, parsed.data, session.user.id);
@@ -33,10 +30,7 @@ export async function PATCH(request: Request, { params }: Params) {
 export async function DELETE(_request: Request, { params }: Params) {
   const session = await auth();
   if (!session?.user) {
-    return Response.json(
-      { error: "Authentification requise" },
-      { status: 401 },
-    );
+    return Response.json({ error: "Authentication required" }, { status: 401 });
   }
   const { id } = await params;
   try {

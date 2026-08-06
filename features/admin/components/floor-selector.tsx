@@ -1,6 +1,7 @@
 "use client";
 
 import { Layers } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 
@@ -21,6 +22,7 @@ export function FloorSelector({
   placedByFloor,
   onSelect,
 }: FloorSelectorProps) {
+  const t = useTranslations("workshop");
   const sorted = [...floors].sort((a, b) => b.level - a.level);
 
   return (
@@ -35,9 +37,9 @@ export function FloorSelector({
             onClick={() => onSelect(floor.id)}
             aria-pressed={active}
             className={cn(
-              "flex w-full items-center justify-between rounded-md px-3 py-2 text-sm transition-colors",
+              "flex w-full items-center justify-between rounded-sm px-3 py-2 font-heading text-sm font-semibold tracking-wide uppercase transition-colors",
               active
-                ? "bg-primary/10 font-medium text-primary"
+                ? "clip-slash bg-primary/15 text-primary"
                 : "text-muted-foreground hover:bg-accent hover:text-foreground",
             )}
           >
@@ -45,13 +47,13 @@ export function FloorSelector({
               <Layers className="size-4" aria-hidden />
               {floor.name}
             </span>
-            <span className="text-xs tabular-nums">{count}</span>
+            <span className="font-mono text-xs tabular-nums">{count}</span>
           </button>
         );
       })}
       {floors.length === 0 && (
         <p className="px-3 py-2 text-xs text-muted-foreground">
-          Aucun étage — vérifie le dossier floors/ de la map.
+          {t("noFloors")}
         </p>
       )}
     </div>

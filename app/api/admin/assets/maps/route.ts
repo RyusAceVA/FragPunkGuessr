@@ -7,7 +7,7 @@ export async function POST(request: Request) {
     return Response.json(
       {
         error:
-          "Système de fichiers en lecture seule — crée la map en local puis commit + push",
+          "Read-only file system — create the map locally, then commit + push",
       },
       { status: 409 },
     );
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const parsed = createAssetsMapSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json({ error: "Requête invalide" }, { status: 400 });
+    return Response.json({ error: "Invalid request" }, { status: 400 });
   }
   try {
     const map = await createAssetsMap(parsed.data.name, parsed.data.code);

@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus, Settings2, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -19,6 +20,7 @@ import { useCreateZone, useDeleteZone, useRenameZone } from "../api";
 import type { AdminMap, AdminZone } from "../types";
 
 function ZoneRow({ zone }: { zone: AdminZone }) {
+  const t = useTranslations("workshop");
   const rename = useRenameZone();
   const remove = useDeleteZone();
   const [name, setName] = useState(zone.name);
@@ -45,10 +47,10 @@ function ZoneRow({ zone }: { zone: AdminZone }) {
       { id: zone.id },
       {
         onSuccess: () =>
-          toast.success(`Zone « ${zone.name} » supprimée`, {
+          toast.success(t("zonesDeleted", { name: zone.name }), {
             description:
               zone.screenshotCount > 0
-                ? `${zone.screenshotCount} screenshot(s) repassent sans zone.`
+                ? t("zonesDeletedDetail", { count: zone.screenshotCount })
                 : undefined,
           }),
         onError: (error) => toast.error(error.message),
@@ -66,10 +68,10 @@ function ZoneRow({ zone }: { zone: AdminZone }) {
           if (e.key === "Enter") e.currentTarget.blur();
           if (e.key === "Escape") setName(zone.name);
         }}
-        aria-label={`Renommer la zone ${zone.name}`}
+        aria-label={t("zonesRename", { name: zone.name })}
         className="h-8 flex-1"
       />
-      <span className="w-8 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
+      <span className="w-8 shrink-0 text-right font-mono text-xs text-muted-foreground tabular-nums">
         {zone.screenshotCount}
       </span>
       <Button
@@ -77,7 +79,7 @@ function ZoneRow({ zone }: { zone: AdminZone }) {
         size="icon-sm"
         onClick={handleDelete}
         disabled={remove.isPending}
-        aria-label={`Supprimer la zone ${zone.name}`}
+        aria-label={t("zonesDelete", { name: zone.name })}
         className="text-muted-foreground hover:text-destructive"
       >
         <Trash2 />
@@ -88,6 +90,7 @@ function ZoneRow({ zone }: { zone: AdminZone }) {
 
 /** Gestion des zones de la map : créer, renommer (inline), supprimer. */
 export function ZoneManager({ map }: { map: AdminMap }) {
+  const t = useTranslations("workshop");
   const create = useCreateZone();
   const [draft, setDraft] = useState("");
 
@@ -108,35 +111,28 @@ export function ZoneManager({ map }: { map: AdminMap }) {
     <Dialog>
       <DialogTrigger
         render={
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label="Gérer les zones de la map"
-          >
+          <Button variant="ghost" size="icon-sm" aria-label={t("manageZones")}>
             <Settings2 />
           </Button>
         }
       />
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Zones — {map.name}</DialogTitle>
-          <DialogDescription>
-            Renomme une zone directement dans son champ. La suppression ne
-            supprime aucun screenshot : ils repassent « sans zone ».
-          </DialogDescription>
+          <DialogTitle>{t("zonesTitle", { map: map.name })}</DialogTitle>
+          <DialogDescription>{t("zonesDescription")}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleCreate} className="flex items-center gap-2">
           <Input
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder="Nouvelle zone (Spawn, Mid, Site A…)"
-            aria-label="Nom de la nouvelle zone"
+            placeholder={t("zonesPlaceholder")}
+            aria-label={t("zonesPlaceholder")}
             className="flex-1"
           />
           <Button type="submit" size="sm" disabled={create.isPending}>
             <Plus data-icon="inline-start" />
-            Ajouter
+            {t("zonesAdd")}
           </Button>
         </form>
 
@@ -146,7 +142,7 @@ export function ZoneManager({ map }: { map: AdminMap }) {
           ))}
           {map.zones.length === 0 && (
             <li className="py-3 text-center text-xs text-muted-foreground">
-              Aucune zone pour l&apos;instant.
+              {t("zonesEmpty")}
             </li>
           )}
         </ul>

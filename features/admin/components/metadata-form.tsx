@@ -1,6 +1,7 @@
 "use client";
 
 import { MapPinOff } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { DIFFICULTIES, DIFFICULTY_LABELS, type Difficulty } from "@/types";
+import { DIFFICULTIES, type Difficulty } from "@/types";
 
 import { useAutosave } from "../hooks/use-autosave";
 import { isPlaced, type AdminMap, type AdminScreenshot } from "../types";
@@ -26,11 +27,6 @@ import { ZoneManager } from "./zone-manager";
 const UNSET = "__UNSET__";
 const NO_ZONE = "__NONE__";
 
-const DIFFICULTY_ITEMS = [
-  { label: "Non renseignée", value: UNSET },
-  ...DIFFICULTIES.map((d) => ({ label: DIFFICULTY_LABELS[d], value: d })),
-];
-
 interface MetadataFormProps {
   /** ⚠ le composant doit être monté avec key={screenshot.id} */
   screenshot: AdminScreenshot;
@@ -39,13 +35,13 @@ interface MetadataFormProps {
 
 /**
  * Éditeur du screenshot sélectionné — tout est sauvegardé automatiquement.
- * Les champs discrets (selects, checkbox, tags) sont dérivés des props :
- * la mutation optimiste met le cache à jour instantanément, donc ils
- * restent synchronisés même quand un raccourci clavier modifie la valeur.
- * Seule la saisie libre (orientation, notes) vit en état local, avec
- * debounce ; le hook d'autosave flush au démontage (`key` par screenshot).
+ * Les champs discrets (selects, tags) sont dérivés des props : la mutation
+ * optimiste met le cache à jour instantanément, donc ils restent
+ * synchronisés même quand un raccourci clavier modifie la valeur.
  */
 export function MetadataForm({ screenshot, map }: MetadataFormProps) {
+  const t = useTranslations("workshop");
+  const tDiff = useTranslations("difficulty");
   const { save } = useAutosave(screenshot.id, map.id);
 
   const [orientation, setOrientation] = useState(
@@ -54,8 +50,12 @@ export function MetadataForm({ screenshot, map }: MetadataFormProps) {
   const [orientationInvalid, setOrientationInvalid] = useState(false);
   const [notes, setNotes] = useState(screenshot.notes ?? "");
 
+  const difficultyItems = [
+    { label: tDiff("UNSET"), value: UNSET },
+    ...DIFFICULTIES.map((d) => ({ label: tDiff(d), value: d })),
+  ];
   const zoneItems = [
-    { label: "Sans zone", value: NO_ZONE },
+    { label: t("noZone"), value: NO_ZONE },
     ...map.zones.map((z) => ({ label: z.name, value: z.id })),
   ];
 
@@ -75,7 +75,7 @@ export function MetadataForm({ screenshot, map }: MetadataFormProps) {
   return (
     <div className="space-y-4">
       {/* Placement (pixels sur l'image d'origine du plan) */}
-      <div className="rounded-lg border border-border bg-card/50 p-3 text-xs">
+      <div className="panel clip-notch-sm p-3 text-xs">
         {isPlaced(screenshot) ? (
           <div className="flex items-center justify-between gap-2">
             <span className="text-muted-foreground">
@@ -92,13 +92,11 @@ export function MetadataForm({ screenshot, map }: MetadataFormProps) {
               onClick={() => save({ placement: null }, 0)}
             >
               <MapPinOff data-icon="inline-start" />
-              Retirer
+              {t("remove")}
             </Button>
           </div>
         ) : (
-          <p className="text-muted-foreground">
-            Non placé — clique sur le plan pour créer le marqueur.
-          </p>
+          <p className="text-muted-foreground">{t("notPlaced")}</p>
         )}
       </div>
 
@@ -106,9 +104,9 @@ export function MetadataForm({ screenshot, map }: MetadataFormProps) {
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
-          <Label htmlFor="meta-difficulty">Difficulté</Label>
+          <Label htmlFor="meta-difficulty">{t("difficultyLabel")}</Label>
           <Select
-            items={DIFFICULTY_ITEMS}
+            items={difficultyItems}
             value={screenshot.difficulty ?? UNSET}
             onValueChange={(value) => {
               save(
@@ -121,7 +119,7 @@ export function MetadataForm({ screenshot, map }: MetadataFormProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {DIFFICULTY_ITEMS.map((item) => (
+              {difficultyItems.map((item) => (
                 <SelectItem key={item.value} value={item.value}>
                   {item.label}
                 </SelectItem>
@@ -131,7 +129,7 @@ export function MetadataForm({ screenshot, map }: MetadataFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="meta-orientation">Orientation (°)</Label>
+          <Label htmlFor="meta-orientation">{t("orientation")}</Label>
           <Input
             id="meta-orientation"
             inputMode="numeric"
@@ -144,13 +142,13 @@ export function MetadataForm({ screenshot, map }: MetadataFormProps) {
       </div>
       {orientationInvalid && (
         <p className="-mt-2 text-xs text-destructive">
-          Entier entre 0 et 359 attendu.
+          {t("orientationError")}
         </p>
       )}
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="meta-zone">Zone</Label>
+          <Label htmlFor="meta-zone">{t("zone")}</Label>
           <ZoneManager map={map} />
         </div>
         <Select
@@ -182,7 +180,7 @@ export function MetadataForm({ screenshot, map }: MetadataFormProps) {
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="meta-tags">Tags</Label>
+          <Label htmlFor="meta-tags">{t("tags")}</Label>
           <TagLibrary />
         </div>
         <TagsInput
@@ -195,11 +193,11 @@ export function MetadataForm({ screenshot, map }: MetadataFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="meta-notes">Commentaires internes</Label>
+        <Label htmlFor="meta-notes">{t("notes")}</Label>
         <Textarea
           id="meta-notes"
           rows={3}
-          placeholder="Angle piégeux, à revérifier après le patch…"
+          placeholder={t("notesPlaceholder")}
           value={notes}
           onChange={(e) => {
             setNotes(e.target.value);

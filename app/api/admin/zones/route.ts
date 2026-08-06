@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const parsed = createZoneSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json({ error: "Requête invalide" }, { status: 400 });
+    return Response.json({ error: "Invalid request" }, { status: 400 });
   }
   try {
     const zone = await createZone(parsed.data.mapId, parsed.data.name);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
 
 import type { UploadKind } from "../schemas";
@@ -26,6 +27,7 @@ const CONCURRENCY = 3;
  * autres, aucune perte silencieuse.
  */
 export function useUploadQueue(mapId: string, kind: UploadKind) {
+  const t = useTranslations("assetsManager");
   const queryClient = useQueryClient();
   const [items, setItems] = useState<UploadItem[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -86,7 +88,7 @@ export function useUploadQueue(mapId: string, kind: UploadKind) {
           } catch {
             updateItem(entry.id, {
               status: "error",
-              message: "Erreur réseau — fichier non transféré",
+              message: t("networkError"),
             });
           }
         }
@@ -100,7 +102,7 @@ export function useUploadQueue(mapId: string, kind: UploadKind) {
       // Compteurs de maps + listes de screenshots impactés
       void queryClient.invalidateQueries({ queryKey: ["admin"] });
     },
-    [isUploading, kind, mapId, queryClient, updateItem],
+    [isUploading, kind, mapId, queryClient, t, updateItem],
   );
 
   const reset = useCallback(() => setItems([]), []);

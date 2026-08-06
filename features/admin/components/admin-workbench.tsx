@@ -1,6 +1,7 @@
 "use client";
 
 import { FolderSync, ImageOff, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef } from "react";
 import { toast } from "sonner";
@@ -34,6 +35,7 @@ import { ScreenshotPreview } from "./screenshot-preview";
  * screenshot non placé est sélectionné automatiquement.
  */
 export function AdminWorkbench() {
+  const t = useTranslations("workshop");
   const store = useAdminStore();
   const mapsQuery = useAdminMaps();
   const maps = useMemo(() => mapsQuery.data ?? [], [mapsQuery.data]);
@@ -152,7 +154,7 @@ export function AdminWorkbench() {
 
   function selectRandomUnplaced() {
     if (unplaced.length === 0) {
-      toast.info("Tous les screenshots de cette map sont placés 🎉");
+      toast.info(t("allPlaced"));
       return;
     }
     const pick = unplaced[Math.floor(Math.random() * unplaced.length)];
@@ -182,9 +184,12 @@ export function AdminWorkbench() {
       }
     }
     if (nearest) {
-      toast.warning("Deux screenshots sont très proches", {
+      toast.warning(t("proximityTitle"), {
         id: "proximity-warning",
-        description: `#${nearest.code} est à ${Math.round(nearest.distance)} px de cette position.`,
+        description: t("proximityDetail", {
+          code: nearest.code,
+          distance: Math.round(nearest.distance),
+        }),
       });
     }
   }
@@ -303,14 +308,9 @@ export function AdminWorkbench() {
       <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center">
         <FolderSync className="size-10 text-muted-foreground" aria-hidden />
         <div className="space-y-1">
-          <h2 className="font-heading text-lg font-semibold">
-            Aucune map en base
-          </h2>
+          <h2 className="display text-2xl">{t("emptyTitle")}</h2>
           <p className="max-w-md text-sm text-muted-foreground">
-            Dépose tes maps dans le dossier d&apos;assets (
-            <code className="font-mono">Maps/&lt;NomMap&gt;/floors</code> +{" "}
-            <code className="font-mono">screenshots</code>) puis lance une
-            synchronisation.
+            {t("emptyDescription")}
           </p>
         </div>
         <Button
@@ -318,7 +318,7 @@ export function AdminWorkbench() {
             sync.mutate(undefined, {
               onSuccess: (s) =>
                 toast.success(
-                  `${s.maps} map(s) et ${s.screenshotsTotal} screenshot(s) synchronisés`,
+                  t("syncShort", { maps: s.maps, total: s.screenshotsTotal }),
                 ),
               onError: (error) => toast.error(error.message),
             })
@@ -327,7 +327,7 @@ export function AdminWorkbench() {
           className="glow-primary"
         >
           <FolderSync data-icon="inline-start" />
-          Synchroniser les assets
+          {t("sync")}
         </Button>
       </div>
     );
@@ -391,7 +391,7 @@ export function AdminWorkbench() {
           />
         ) : (
           <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
-            Sélectionne un étage.
+            {t("selectFloor")}
           </div>
         )}
       </section>
@@ -423,15 +423,8 @@ export function AdminWorkbench() {
           ) : (
             <div className="flex h-full min-h-40 flex-col items-center justify-center gap-2 text-center text-sm text-muted-foreground">
               <ImageOff className="size-6" aria-hidden />
-              <p>
-                Sélectionne un screenshot dans la liste
-                <br />
-                ou un marqueur sur le plan.
-              </p>
-              <p className="text-xs">
-                Raccourcis : ←/→ naviguer · R aléatoire · 1-4 difficulté · Suppr
-                retirer le pin
-              </p>
+              <p>{t("selectPrompt")}</p>
+              <p className="text-xs">{t("shortcuts")}</p>
             </div>
           )}
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, CircleAlert, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 
@@ -22,6 +23,8 @@ export function UploadProgress({
   errorCount,
   isUploading,
 }: UploadProgressProps) {
+  const t = useTranslations("assetsManager");
+
   if (total === 0) return null;
 
   const processed = doneCount + errorCount;
@@ -30,7 +33,7 @@ export function UploadProgress({
   const warnings = items.filter((i) => i.status === "done" && i.warning);
 
   return (
-    <div className="space-y-2 rounded-xl border border-border bg-card p-3">
+    <div className="panel clip-notch-sm space-y-2 p-3">
       <div className="flex items-center justify-between text-sm">
         <span className="flex items-center gap-2 font-medium">
           {isUploading ? (
@@ -38,23 +41,22 @@ export function UploadProgress({
           ) : errorCount > 0 ? (
             <CircleAlert className="size-4 text-destructive" aria-hidden />
           ) : (
-            <Check className="size-4 text-emerald-400" aria-hidden />
+            <Check className="size-4 text-signal" aria-hidden />
           )}
           {isUploading
-            ? "Import en cours…"
+            ? t("uploading")
             : errorCount > 0
-              ? "Import terminé avec des erreurs"
-              : "Import terminé"}
+              ? t("doneWithErrors")
+              : t("done")}
         </span>
         <span className="font-mono text-xs text-muted-foreground tabular-nums">
-          {processed}/{total} fichier{total > 1 ? "s" : ""}
-          {errorCount > 0 &&
-            ` · ${errorCount} erreur${errorCount > 1 ? "s" : ""}`}
+          {t("filesCount", { processed, total })}
+          {errorCount > 0 && ` · ${t("errorsCount", { count: errorCount })}`}
         </span>
       </div>
 
       <div
-        className="h-1.5 overflow-hidden rounded-full bg-muted"
+        className="h-1.5 overflow-hidden bg-muted"
         role="progressbar"
         aria-valuenow={percent}
         aria-valuemin={0}
@@ -62,8 +64,8 @@ export function UploadProgress({
       >
         <div
           className={cn(
-            "h-full rounded-full transition-[width] duration-300",
-            errorCount > 0 ? "bg-amber-400" : "bg-primary",
+            "h-full transition-[width] duration-300",
+            errorCount > 0 ? "bg-destructive" : "bg-signal",
           )}
           style={{ width: `${percent}%` }}
         />
@@ -85,12 +87,13 @@ export function UploadProgress({
 
       {warnings.length > 0 && (
         <p className="text-xs text-muted-foreground">
-          {warnings.length} avertissement{warnings.length > 1 ? "s" : ""} :{" "}
-          {warnings
-            .map((w) => `${w.fileName} (${w.warning})`)
-            .slice(0, 3)
-            .join(", ")}
-          {warnings.length > 3 && "…"}
+          {t("warnings", {
+            count: warnings.length,
+            list: warnings
+              .map((w) => `${w.fileName} (${w.warning})`)
+              .slice(0, 3)
+              .join(", "),
+          })}
         </p>
       )}
     </div>

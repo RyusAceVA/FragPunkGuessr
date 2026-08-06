@@ -79,7 +79,7 @@ export async function scanAssets(): Promise<ScanResult> {
       .map((e) => e.name)
       .sort();
   } catch {
-    warnings.push(`Dossier d'assets introuvable : ${root}`);
+    warnings.push(`Assets folder not found: ${root}`);
     return { maps, warnings };
   }
 
@@ -94,7 +94,7 @@ export async function scanAssets(): Promise<ScanResult> {
       const level = parseFloorLevel(stem);
       if (level === null) {
         warnings.push(
-          `${dirName}/floors/${file} : niveau illisible (attendu "1F", "B1", "RDC"…) — ignoré`,
+          `${dirName}/floors/${file} : unreadable floor level (expected "1F", "B1", "RDC"…) — skipped`,
         );
         continue;
       }
@@ -102,7 +102,7 @@ export async function scanAssets(): Promise<ScanResult> {
       const size = await readImageSize(absolute);
       if (!size) {
         warnings.push(
-          `${dirName}/floors/${file} : dimensions illisibles (PNG/WebP attendu) — ignoré`,
+          `${dirName}/floors/${file} : unreadable dimensions (PNG/WebP expected) — skipped`,
         );
         continue;
       }
@@ -126,7 +126,7 @@ export async function scanAssets(): Promise<ScanResult> {
 
     if (floors.length === 0 && screenshots.length === 0) {
       warnings.push(
-        `${dirName}/ : aucun plan ni screenshot trouvé — dossier ignoré`,
+        `${dirName}/ : no floor plan or screenshot found — folder skipped`,
       );
       continue;
     }

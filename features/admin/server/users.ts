@@ -44,8 +44,8 @@ function uniqueMessage(error: unknown): string {
       ? String(error.meta.target[0])
       : "";
   return target === "username"
-    ? "Ce nom d'utilisateur est déjà pris"
-    : "Cet email est déjà utilisé";
+    ? "This username is already taken"
+    : "This email is already in use";
 }
 
 export async function listUsers(
@@ -106,7 +106,7 @@ async function assertNotLastActiveAdmin(targetId: string) {
   if (otherActiveAdmins === 0) {
     throw new AdminError(
       409,
-      "Impossible : ce compte est le dernier administrateur actif",
+      "Not allowed: this is the last active administrator",
     );
   }
 }
@@ -117,7 +117,7 @@ export async function updateUser(
   actorId: string,
 ): Promise<AdminUser> {
   const target = await prisma.user.findUnique({ where: { id } });
-  if (!target) throw new AdminError(404, "Utilisateur introuvable");
+  if (!target) throw new AdminError(404, "User not found");
 
   const demotes = input.role !== undefined && input.role !== "ADMIN";
   const deactivates = input.isActive === false;
@@ -125,7 +125,7 @@ export async function updateUser(
   if (id === actorId && (demotes || deactivates)) {
     throw new AdminError(
       409,
-      "Tu ne peux pas retirer tes propres droits ni désactiver ton propre compte",
+      "You can't remove your own admin rights or deactivate your own account",
     );
   }
   if (target.role === "ADMIN" && target.isActive && (demotes || deactivates)) {
@@ -156,10 +156,10 @@ export async function updateUser(
 
 export async function deleteUser(id: string, actorId: string): Promise<void> {
   const target = await prisma.user.findUnique({ where: { id } });
-  if (!target) throw new AdminError(404, "Utilisateur introuvable");
+  if (!target) throw new AdminError(404, "User not found");
 
   if (id === actorId) {
-    throw new AdminError(409, "Tu ne peux pas supprimer ton propre compte");
+    throw new AdminError(409, "You can't delete your own account");
   }
   if (target.role === "ADMIN" && target.isActive) {
     await assertNotLastActiveAdmin(id);

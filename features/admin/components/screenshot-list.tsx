@@ -1,6 +1,7 @@
 "use client";
 
 import { MapPin, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 
 import { Input } from "@/components/ui/input";
@@ -42,6 +43,7 @@ export function ScreenshotList({
   onSearchChange,
   onSelect,
 }: ScreenshotListProps) {
+  const t = useTranslations("workshop");
   const floorNames = useMemo(
     () => new Map(floors.map((f) => [f.id, f.name])),
     [floors],
@@ -56,7 +58,7 @@ export function ScreenshotList({
       return (
         s.code.toLowerCase().includes(query) ||
         (s.zoneName?.toLowerCase().includes(query) ?? false) ||
-        s.tags.some((t) => t.includes(query))
+        s.tags.some((tag) => tag.includes(query))
       );
     });
   }, [screenshots, filter, search]);
@@ -73,9 +75,9 @@ export function ScreenshotList({
         <Input
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Numéro, zone, tag…"
+          placeholder={t("searchPlaceholder")}
           className="pl-8"
-          aria-label="Rechercher un screenshot"
+          aria-label={t("searchAria")}
         />
       </div>
 
@@ -84,14 +86,14 @@ export function ScreenshotList({
         onValueChange={(value) => onFilterChange(value as ScreenshotFilter)}
       >
         <TabsList className="w-full">
-          <TabsTrigger value="all" className="flex-1 text-xs">
-            Tous ({screenshots.length})
+          <TabsTrigger value="all" className="flex-1">
+            {t("tabAll", { count: screenshots.length })}
           </TabsTrigger>
-          <TabsTrigger value="unplaced" className="flex-1 text-xs">
-            À placer ({unplacedCount})
+          <TabsTrigger value="unplaced" className="flex-1">
+            {t("tabUnplaced", { count: unplacedCount })}
           </TabsTrigger>
-          <TabsTrigger value="placed" className="flex-1 text-xs">
-            Placés ({screenshots.length - unplacedCount})
+          <TabsTrigger value="placed" className="flex-1">
+            {t("tabPlaced", { count: screenshots.length - unplacedCount })}
           </TabsTrigger>
         </TabsList>
       </Tabs>
@@ -109,9 +111,9 @@ export function ScreenshotList({
                 type="button"
                 onClick={() => onSelect(screenshot)}
                 className={cn(
-                  "flex w-full items-center gap-2.5 rounded-md border p-1.5 text-left transition-colors",
+                  "clip-notch-sm flex w-full items-center gap-2.5 border p-1.5 text-left transition-colors",
                   selected
-                    ? "border-primary/50 bg-primary/10"
+                    ? "border-primary/60 bg-primary/10"
                     : "border-transparent hover:bg-accent",
                 )}
               >
@@ -119,7 +121,7 @@ export function ScreenshotList({
                 <img
                   src={assetUrl(screenshot.assetPath)}
                   alt=""
-                  className="h-10 w-16 shrink-0 rounded bg-black/40 object-cover"
+                  className="h-10 w-16 shrink-0 rounded-sm bg-black/40 object-cover"
                   loading="lazy"
                   decoding="async"
                 />
@@ -127,7 +129,7 @@ export function ScreenshotList({
                   <span className="flex items-center gap-1.5">
                     <span
                       className={cn(
-                        "size-1.5 shrink-0 rounded-full",
+                        "size-1.5 shrink-0",
                         difficultyStyle(screenshot.difficulty).dot,
                       )}
                       aria-hidden
@@ -137,13 +139,15 @@ export function ScreenshotList({
                     </span>
                   </span>
                   <span className="block truncate text-xs text-muted-foreground">
-                    {screenshot.zoneName ?? "Zone non renseignée"}
+                    {screenshot.zoneName ?? t("zoneUnset")}
                   </span>
                 </span>
                 {placed && (
                   <span
-                    className="flex shrink-0 items-center gap-1 text-[10px] text-neon-cyan"
-                    title={`Placé sur ${floorNames.get(screenshot.floorId) ?? "?"}`}
+                    className="flex shrink-0 items-center gap-1 text-[10px] text-info"
+                    title={t("placedOn", {
+                      floor: floorNames.get(screenshot.floorId) ?? "?",
+                    })}
                   >
                     <MapPin className="size-3" aria-hidden />
                     {floorNames.get(screenshot.floorId) ?? "?"}
@@ -155,7 +159,7 @@ export function ScreenshotList({
         })}
         {filtered.length === 0 && (
           <li className="px-2 py-6 text-center text-xs text-muted-foreground">
-            Aucun screenshot ne correspond.
+            {t("noMatch")}
           </li>
         )}
       </ul>

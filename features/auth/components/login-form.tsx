@@ -1,6 +1,7 @@
 "use client";
 
 import { KeyRound, Loader2, LogIn } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,8 @@ import { authenticate } from "../actions";
 
 /** Formulaire de connexion — Server Action + états de chargement. */
 export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
-  const [errorMessage, formAction, isPending] = useActionState(
+  const t = useTranslations("auth");
+  const [errorCode, formAction, isPending] = useActionState(
     authenticate,
     undefined,
   );
@@ -21,20 +23,20 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
       <input type="hidden" name="callbackUrl" value={callbackUrl} />
 
       <div className="space-y-2">
-        <Label htmlFor="login-email">Email</Label>
+        <Label htmlFor="login-email">{t("email")}</Label>
         <Input
           id="login-email"
           name="email"
           type="email"
           autoComplete="email"
-          placeholder="admin@exemple.com"
+          placeholder="admin@example.com"
           required
           autoFocus
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="login-password">Mot de passe</Label>
+        <Label htmlFor="login-password">{t("password")}</Label>
         <Input
           id="login-password"
           name="password"
@@ -45,12 +47,12 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
         />
       </div>
 
-      {errorMessage && (
+      {errorCode && (
         <p
           role="alert"
-          className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          className="clip-notch-sm border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
         >
-          {errorMessage}
+          {t(`errors.${errorCode}`)}
         </p>
       )}
 
@@ -65,12 +67,12 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
         ) : (
           <LogIn data-icon="inline-start" />
         )}
-        Connexion
+        {t("submit")}
       </Button>
 
       <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
         <KeyRound className="size-3" aria-hidden />
-        Session sécurisée — cookies httpOnly, 12 h
+        {t("sessionNote")}
       </p>
     </form>
   );

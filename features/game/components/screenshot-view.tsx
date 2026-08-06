@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
  * servie par UUID et l'alt reste générique.
  */
 export function ScreenshotView({ imageUrl }: { imageUrl: string }) {
+  const t = useTranslations("play.round");
   const [loaded, setLoaded] = useState(false);
 
   return (
@@ -19,7 +21,7 @@ export function ScreenshotView({ imageUrl }: { imageUrl: string }) {
       <motion.img
         key={imageUrl}
         src={imageUrl}
-        alt="Screenshot à deviner"
+        alt={t("screenshotAlt")}
         draggable={false}
         onLoad={() => setLoaded(true)}
         initial={{ opacity: 0, scale: 0.985 }}

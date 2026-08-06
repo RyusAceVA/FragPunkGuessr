@@ -29,7 +29,7 @@ function assertAllowedExtension(fileName: string): string {
   if (!ALLOWED_EXTENSIONS.has(ext)) {
     throw new AssetsError(
       422,
-      `Format non supporté (${ext || "sans extension"}) — PNG, WebP ou JPEG attendu`,
+      `Unsupported format (${ext || "no extension"}) — PNG, WebP or JPEG expected`,
     );
   }
   return ext;
@@ -44,7 +44,7 @@ async function writeFileAtomic(absolutePath: string, bytes: Buffer) {
 
 async function getMapOrThrow(mapId: string) {
   const map = await prisma.gameMap.findUnique({ where: { id: mapId } });
-  if (!map) throw new AssetsError(404, "Map introuvable");
+  if (!map) throw new AssetsError(404, "Map not found");
   return map;
 }
 
@@ -54,7 +54,7 @@ async function imageDimensions(bytes: Buffer) {
     if (!meta.width || !meta.height) throw new Error("no dimensions");
     return { width: meta.width, height: meta.height };
   } catch {
-    throw new AssetsError(422, "Fichier illisible — est-ce bien une image ?");
+    throw new AssetsError(422, "Unreadable file — is it really an image?");
   }
 }
 
@@ -77,7 +77,7 @@ export async function saveFloorPlan(
   if (level === null) {
     throw new AssetsError(
       422,
-      `Étage non reconnu dans « ${stem} » — noms acceptés : 1F, 2F…, B1, B2, RDC, Roof, Basement`,
+      `Floor not recognized in “${stem}” — accepted names: 1F, 2F…, B1, B2, RDC, Roof, Basement`,
     );
   }
 
@@ -90,7 +90,7 @@ export async function saveFloorPlan(
   if (conflictingFloor) {
     throw new AssetsError(
       409,
-      `L'étage « ${conflictingFloor.name} » (niveau ${level}) existe déjà via un autre fichier`,
+      `Floor “${conflictingFloor.name}” (level ${level}) already exists via another file`,
     );
   }
 
@@ -149,7 +149,7 @@ export async function saveScreenshot(
       .webp({ quality: 75 })
       .toFile(path.join(thumbsDir, `${stem}.webp`));
   } catch {
-    warning = "miniature non générée";
+    warning = "thumbnail not generated";
   }
 
   await prisma.screenshot.create({

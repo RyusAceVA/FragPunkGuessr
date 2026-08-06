@@ -1,20 +1,25 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 import { PageContainer } from "@/components/layout/page-container";
-import { PageHeader } from "@/components/layout/page-header";
 import { StatsOverview } from "@/features/stats";
 
-export const metadata: Metadata = {
-  title: "Stats",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("stats");
+  return { title: t("meta") };
+}
 
-export default function StatsPage() {
+export default async function StatsPage() {
+  const t = await getTranslations("stats");
+
   return (
     <PageContainer>
-      <PageHeader
-        title="Statistiques"
-        description="Ton game sense en chiffres. Ces données seront alimentées automatiquement par tes parties."
-      />
+      <div className="space-y-1.5">
+        <h1 className="display text-4xl sm:text-5xl">{t("title")}</h1>
+        <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
+          {t("subtitle")}
+        </p>
+      </div>
       <StatsOverview />
     </PageContainer>
   );

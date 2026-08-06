@@ -2,6 +2,7 @@
 
 import { useIsMutating, useMutationState } from "@tanstack/react-query";
 import { Check, CloudUpload, Loader2, TriangleAlert } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 
@@ -13,6 +14,7 @@ import { UPDATE_SCREENSHOT_MUTATION_KEY } from "../api";
  * ou « Erreur » selon l'issue de la dernière mutation.
  */
 export function SaveIndicator() {
+  const t = useTranslations("workshop");
   const savingCount = useIsMutating({
     mutationKey: UPDATE_SCREENSHOT_MUTATION_KEY,
   });
@@ -36,33 +38,33 @@ export function SaveIndicator() {
       role="status"
       aria-live="polite"
       className={cn(
-        "flex items-center gap-1.5 text-xs transition-colors",
+        "overline-label flex items-center gap-1.5 transition-colors",
         state === "error" ? "text-destructive" : "text-muted-foreground",
-        state === "saved" && "text-emerald-400",
+        state === "saved" && "text-signal",
       )}
     >
       {state === "saving" && (
         <>
           <Loader2 className="size-3.5 animate-spin" aria-hidden />
-          Enregistrement…
+          {t("saving")}
         </>
       )}
       {state === "saved" && (
         <>
           <Check className="size-3.5" aria-hidden />
-          Sauvegardé
+          {t("saved")}
         </>
       )}
       {state === "error" && (
         <>
           <TriangleAlert className="size-3.5" aria-hidden />
-          Erreur — réessaie
+          {t("saveError")}
         </>
       )}
       {state === "idle" && (
         <>
           <CloudUpload className="size-3.5" aria-hidden />
-          Autosave
+          {t("autosave")}
         </>
       )}
     </span>
