@@ -1,103 +1,124 @@
-import Image from "next/image";
+import { BarChart3, Map as MapIcon, Medal, Trophy } from "lucide-react";
+import Link from "next/link";
 
-export default function Home() {
+import { FadeIn } from "@/components/motion/fade-in";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { siteConfig } from "@/lib/site-config";
+
+interface FeatureHighlight {
+  title: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+const HIGHLIGHTS: readonly FeatureHighlight[] = [
+  {
+    title: "Toutes les maps",
+    description:
+      "Chaque map de FragPunk, étage par étage, avec des screenshots soigneusement sélectionnés.",
+    icon: MapIcon,
+  },
+  {
+    title: "Stats détaillées",
+    description:
+      "Précision, temps de réaction, progression par map : mesure chaque aspect de ton game sense.",
+    icon: BarChart3,
+  },
+  {
+    title: "Succès à débloquer",
+    description:
+      "Des défis qui récompensent la régularité comme les guesses parfaits.",
+    icon: Medal,
+  },
+  {
+    title: "Classements",
+    description: "Compare-toi aux meilleurs, globalement ou map par map.",
+    icon: Trophy,
+  },
+] as const;
+
+export default function HomePage() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <>
+      {/* Hero */}
+      <section className="relative overflow-hidden">
+        <div className="bg-grid mask-fade-edges absolute inset-0" aria-hidden />
+        <div
+          className="absolute top-[-10rem] left-1/2 size-[32rem] -translate-x-1/2 rounded-full bg-primary/20 blur-[128px]"
+          aria-hidden
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 py-24 text-center sm:px-6 sm:py-32">
+          <FadeIn>
+            <Badge
+              variant="outline"
+              className="mb-6 border-primary/40 text-primary"
+            >
+              Alpha en construction
+            </Badge>
+          </FadeIn>
+          <FadeIn delay={0.08}>
+            <h1 className="max-w-3xl font-heading text-4xl font-bold tracking-tight text-balance sm:text-6xl">
+              Tu crois connaître les maps de FragPunk{" "}
+              <span className="text-gradient-neon">par cœur ?</span>
+            </h1>
+          </FadeIn>
+          <FadeIn delay={0.16}>
+            <p className="mt-6 max-w-xl text-base text-balance text-muted-foreground sm:text-lg">
+              {siteConfig.tagline} Un screenshot, un plan, un guess — prouve ton
+              game sense.
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.24}>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              {/* render → <a> : nativeButton={false} requis par Base UI */}
+              <Button
+                size="lg"
+                className="glow-primary"
+                nativeButton={false}
+                render={<Link href="/play" />}
+              >
+                Jouer maintenant
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                nativeButton={false}
+                render={<Link href="/stats" />}
+              >
+                Voir les stats
+              </Button>
+            </div>
+          </FadeIn>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section>
+
+      {/* Points forts */}
+      <section className="mx-auto w-full max-w-6xl px-4 pb-24 sm:px-6">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {HIGHLIGHTS.map((feature, i) => (
+            <FadeIn key={feature.title} delay={i * 0.08}>
+              <Card className="h-full transition-colors hover:border-primary/40">
+                <CardHeader>
+                  <span className="mb-2 flex size-10 items-center justify-center rounded-lg bg-primary/15 text-primary">
+                    <feature.icon className="size-5" aria-hidden />
+                  </span>
+                  <CardTitle className="font-heading text-lg">
+                    {feature.title}
+                  </CardTitle>
+                  <CardDescription>{feature.description}</CardDescription>
+                </CardHeader>
+              </Card>
+            </FadeIn>
+          ))}
+        </div>
+      </section>
+    </>
   );
 }
