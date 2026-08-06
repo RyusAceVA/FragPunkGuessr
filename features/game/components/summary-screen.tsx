@@ -3,13 +3,14 @@
 import { Check, Home, Loader2, RotateCcw, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { CountUp } from "@/components/motion/count-up";
 import { FadeIn } from "@/components/motion/fade-in";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 import { useSessionSummary } from "../api";
-import type { RoundHistoryEntry } from "../types";
+import type { RoundHistoryEntry, SessionSummary } from "../types";
 
 function CheckOrCross({ ok }: { ok: boolean }) {
   return ok ? (
@@ -55,22 +56,23 @@ function RoundRow({ entry }: { entry: RoundHistoryEntry }) {
       </div>
       <div
         className={cn(
-          "clip-slash shrink-0 px-3 py-2 text-center",
-          entry.distance !== null ? "bg-signal/15" : "bg-destructive/15",
+          "clip-slash w-24 shrink-0 px-3 py-2 text-center",
+          entry.score > 0 ? "bg-signal/15" : "bg-destructive/15",
         )}
       >
-        {entry.distance !== null ? (
-          <>
-            <p className="display text-xl text-signal tabular-nums">
-              {entry.distance}
-            </p>
-            <p className="text-[10px] text-muted-foreground">{t("pixels")}</p>
-          </>
-        ) : (
-          <p className="font-heading text-xs font-bold text-destructive uppercase">
-            {t("lost")}
-          </p>
-        )}
+        <p
+          className={cn(
+            "display text-xl tabular-nums",
+            entry.score > 0 ? "text-signal" : "text-destructive",
+          )}
+        >
+          {entry.score}
+        </p>
+        <p className="text-[10px] text-muted-foreground">
+          {entry.distance !== null
+            ? t("distanceShort", { distance: entry.distance })
+            : t("lost")}
+        </p>
       </div>
     </div>
   );
@@ -92,24 +94,69 @@ export function SummaryScreen({
 }: SummaryScreenProps) {
   const t = useTranslations("play.summary");
   const summaryQuery = useSessionSummary(sessionId, true);
-  const rounds = summaryQuery.data?.rounds ?? [];
+  const summary: SessionSummary | undefined = summaryQuery.data;
+  const rounds = summary?.rounds ?? [];
 
   return (
     <div className="mx-auto flex h-full w-full max-w-2xl flex-col gap-4 overflow-y-auto px-4 py-8 sm:px-6">
       <FadeIn>
         <div className="space-y-1 text-center">
           <h1 className="display text-5xl">
-            {t("title1")} <span className="text-primary">{t("title2")}</span>
+            {t("title1")} <span className="text-holo">{t("title2")}</span>
           </h1>
           <p className="text-sm text-muted-foreground">
             {rounds.length > 0 &&
               t("nailed", {
-                correct: rounds.filter((r) => r.floorCorrect).length,
+                correct: summary?.nailedCount ?? 0,
                 total: rounds.length,
               })}
           </p>
         </div>
       </FadeIn>
+
+      {/* Score final + statistiques de la partie */}
+      {summary && (
+        <FadeIn delay={0.08}>
+          <div className="panel clip-notch hard-shadow-signal p-5 text-center">
+            <p className="overline-label text-muted-foreground">
+              {t("finalScore")}
+            </p>
+            <p className="display mt-1 text-6xl text-signal tabular-nums">
+              <CountUp value={summary.totalScore} duration={1.4} delay={0.3} />
+            </p>
+            <p className="font-mono text-sm text-muted-foreground">
+              / {summary.maxScore}
+            </p>
+
+            <div className="mt-4 grid grid-cols-2 gap-2 border-t border-border pt-4">
+              <div>
+                <p className="display text-3xl tabular-nums">
+                  <CountUp
+                    value={summary.accuracyPct}
+                    duration={1.2}
+                    delay={0.5}
+                  />
+                  <span className="text-lg text-muted-foreground">%</span>
+                </p>
+                <p className="overline-label text-muted-foreground">
+                  {t("accuracy")}
+                </p>
+              </div>
+              <div>
+                <p className="display text-3xl tabular-nums">
+                  {summary.nailedCount}
+                  <span className="text-lg text-muted-foreground">
+                    /{rounds.length}
+                  </span>
+                </p>
+                <p className="overline-label text-muted-foreground">
+                  {t("roundsWon")}
+                </p>
+              </div>
+            </div>
+          </div>
+        </FadeIn>
+      )}
 
       {summaryQuery.isLoading ? (
         <div className="space-y-2">

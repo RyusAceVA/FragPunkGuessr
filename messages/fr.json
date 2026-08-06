@@ -120,7 +120,10 @@
       "planAlt": "Plan {name}",
       "screenshotAlt": "Screenshot de la manche",
       "next": "Manche suivante",
-      "recap": "Voir le récapitulatif"
+      "recap": "Voir le récapitulatif",
+      "roundScore": "Score de la manche",
+      "totalScore": "Cumul",
+      "roundProgress": "Manche {index} sur {total}"
     },
     "summary": {
       "title1": "Fin de",
@@ -134,7 +137,11 @@
       "pixels": "pixels",
       "screenshotAlt": "Screenshot de la manche {index}",
       "newGame": "Nouvelle partie",
-      "backHome": "Retour à l'accueil"
+      "backHome": "Retour à l'accueil",
+      "finalScore": "Score final",
+      "accuracy": "Précision moy.",
+      "roundsWon": "Manches gagnées",
+      "distanceShort": "{distance} px"
     }
   },
   "auth": {

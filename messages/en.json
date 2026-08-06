@@ -120,7 +120,10 @@
       "planAlt": "Floor plan {name}",
       "screenshotAlt": "Round screenshot",
       "next": "Next round",
-      "recap": "See the recap"
+      "recap": "See the recap",
+      "roundScore": "Round score",
+      "totalScore": "Total",
+      "roundProgress": "Round {index} of {total}"
     },
     "summary": {
       "title1": "Match",
@@ -134,7 +137,11 @@
       "pixels": "pixels",
       "screenshotAlt": "Round {index} screenshot",
       "newGame": "Play again",
-      "backHome": "Back to home"
+      "backHome": "Back to home",
+      "finalScore": "Final score",
+      "accuracy": "Avg accuracy",
+      "roundsWon": "Rounds won",
+      "distanceShort": "{distance} px"
     }
   },
   "auth": {

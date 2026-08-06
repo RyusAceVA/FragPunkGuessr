@@ -55,10 +55,17 @@ export interface RevealedPosition {
 export interface RoundResult {
   roundId: string;
   index: number;
+  roundCount: number;
   mapCorrect: boolean;
   floorCorrect: boolean;
   /** Distance en pixels — null si mauvaise map ou mauvais étage */
   distance: number | null;
+  /** Score de la manche (0..maxPerRound) — calculé par lib/score.ts */
+  score: number;
+  /** Score cumulé de la partie après cette manche */
+  totalScore: number;
+  /** Plafond d'une manche (pour l'affichage "/ 5000") */
+  maxPerRound: number;
   actual: RevealedPosition;
   guess: {
     mapName: string;
@@ -86,9 +93,17 @@ export interface RoundHistoryEntry {
   mapCorrect: boolean;
   floorCorrect: boolean;
   distance: number | null;
+  score: number;
 }
 
 export interface SessionSummary {
   sessionId: string;
   rounds: RoundHistoryEntry[];
+  totalScore: number;
+  /** Score maximal théorique (roundCount × maxPerRound) */
+  maxScore: number;
+  /** Précision moyenne : totalScore / maxScore, en % (0–100) */
+  accuracyPct: number;
+  /** Manches gagnées (bonne map + bon étage) */
+  nailedCount: number;
 }

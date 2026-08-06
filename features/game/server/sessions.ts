@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { maxSessionScore, SCORE_CONFIG, scoreRound } from "@/lib/score";
 
 import { GAME_CONFIG } from "../config";
 import type { SubmitGuessInput } from "../schemas";
@@ -134,6 +135,16 @@ export async function submitGuess(
       )
     : null;
 
+  // Score de la manche — délégué au ScoreService (lib/score.ts)
+  const score = scoreRound({
+    mapCorrect,
+    floorCorrect,
+    distancePx: distance,
+    planWidth: screenshot.floor.width,
+    planHeight: screenshot.floor.height,
+  });
+  const totalScore = session.score + score;
+
   const isLastRound = current.index === session.rounds.length;
 
   await prisma.$transaction([
@@ -144,16 +155,18 @@ export async function submitGuess(
         guessX: input.pixelX,
         guessY: input.pixelY,
         distance,
+        score,
       },
     }),
-    ...(isLastRound
-      ? [
-          prisma.gameSession.update({
-            where: { id: session.id },
-            data: { status: "COMPLETED", completedAt: new Date() },
-          }),
-        ]
-      : []),
+    prisma.gameSession.update({
+      where: { id: session.id },
+      data: {
+        score: totalScore,
+        ...(isLastRound
+          ? { status: "COMPLETED", completedAt: new Date() }
+          : {}),
+      },
+    }),
   ]);
 
   const updatedRounds: RoundLite[] = session.rounds.map((r) =>
@@ -164,9 +177,13 @@ export async function submitGuess(
     result: {
       roundId: current.id,
       index: current.index,
+      roundCount: session.rounds.length,
       mapCorrect,
       floorCorrect,
       distance,
+      score,
+      totalScore,
+      maxPerRound: SCORE_CONFIG.maxPerRound,
       actual: {
         mapName: screenshot.map.name,
         floorName: screenshot.floor.name,
@@ -240,10 +257,22 @@ export async function getSessionSummary(
       mapCorrect,
       floorCorrect: mapCorrect && guessFloor?.id === round.screenshot.floorId,
       distance: round.distance,
+      score: round.score ?? 0,
     };
   });
 
-  return { sessionId: session.id, rounds };
+  const totalScore = rounds.reduce((sum, r) => sum + r.score, 0);
+  const maxScore = maxSessionScore(rounds.length);
+
+  return {
+    sessionId: session.id,
+    rounds,
+    totalScore,
+    maxScore,
+    /** Moyenne des ratios score/max, en % (0–100) */
+    accuracyPct: maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0,
+    nailedCount: rounds.filter((r) => r.floorCorrect).length,
+  };
 }
 
 /** Chemin du fichier image d'une manche (servi par l'id du Round). */

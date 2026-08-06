@@ -5,9 +5,11 @@ import { ArrowRight, ListOrdered, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { MapPin } from "@/components/map-pin";
+import { CountUp } from "@/components/motion/count-up";
 import { Button } from "@/components/ui/button";
 import { usePanZoom } from "@/hooks/use-pan-zoom";
 import { assetUrl } from "@/lib/assets";
+import { cn } from "@/lib/utils";
 
 import { ACTUAL_PIN_COLOR, PLAYER_PIN_COLOR } from "../constants";
 import type { RoundResult } from "../types";
@@ -143,14 +145,96 @@ function Verdict({ result }: { result: RoundResult }) {
     );
   }
   return (
-    <div className="panel clip-notch hard-shadow-signal p-5 text-center">
+    <div className="panel clip-notch p-4 text-center">
       <p className="overline-label text-muted-foreground">{t("distance")}</p>
-      <p className="display mt-1 text-5xl tabular-nums">
+      <p className="display mt-0.5 text-3xl tabular-nums">
         {result.distance}
-        <span className="ml-1.5 text-xl text-muted-foreground">
+        <span className="ml-1.5 text-lg text-muted-foreground">
           {t("pixels")}
         </span>
       </p>
+    </div>
+  );
+}
+
+/**
+ * Carte de score : score de la manche (compteur animé), cumul de la
+ * partie, et progression sur les N manches (segments remplis).
+ */
+function ScoreCard({ result }: { result: RoundResult }) {
+  const t = useTranslations("play.result");
+  const won = result.score > 0;
+
+  return (
+    <div
+      className={cn(
+        "panel clip-notch space-y-3 p-4",
+        won ? "hard-shadow-signal" : "border-destructive/30",
+      )}
+    >
+      <div className="text-center">
+        <p className="overline-label text-muted-foreground">
+          {t("roundScore")}
+        </p>
+        <p
+          className={cn(
+            "display mt-0.5 text-5xl tabular-nums",
+            won ? "text-signal" : "text-destructive",
+          )}
+        >
+          <CountUp value={result.score} duration={1.1} delay={0.35} />
+        </p>
+        <p className="font-mono text-xs text-muted-foreground">
+          / {result.maxPerRound}
+        </p>
+      </div>
+
+      <div className="flex items-center justify-between border-t border-border pt-3 text-sm">
+        <span className="overline-label text-muted-foreground">
+          {t("totalScore")}
+        </span>
+        <span className="display text-2xl tabular-nums">
+          <CountUp
+            from={result.totalScore - result.score}
+            value={result.totalScore}
+            duration={1.1}
+            delay={0.55}
+          />
+        </span>
+      </div>
+
+      {/* Progression sur les manches de la partie */}
+      <div
+        className="flex gap-1"
+        role="img"
+        aria-label={t("roundProgress", {
+          index: result.index,
+          total: result.roundCount,
+        })}
+      >
+        {Array.from({ length: result.roundCount }, (_, i) => {
+          const played = i + 1 <= result.index;
+          const isCurrent = i + 1 === result.index;
+          return (
+            <motion.span
+              key={i}
+              initial={isCurrent ? { scaleX: 0 } : false}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 0.4, duration: 0.4, ease: "easeOut" }}
+              className={cn(
+                "clip-slash h-1.5 flex-1 origin-left",
+                isCurrent
+                  ? won
+                    ? "bg-signal"
+                    : "bg-destructive"
+                  : played
+                    ? "bg-foreground/45"
+                    : "bg-muted",
+              )}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -186,9 +270,10 @@ export function ResultOverlay({
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.4 }}
-          className="flex w-full shrink-0 flex-col gap-4 lg:w-80"
+          className="flex min-h-0 w-full shrink-0 flex-col gap-3 overflow-y-auto lg:w-80"
         >
           <Verdict result={result} />
+          <ScoreCard result={result} />
 
           <div className="panel clip-notch overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element -- image servie par l'id de manche */}
