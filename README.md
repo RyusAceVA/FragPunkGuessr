@@ -52,20 +52,36 @@ Ensuite : se connecter sur `/login`, ouvrir `/admin`, cliquer
 
 ---
 
-## Créer le premier administrateur
+## Comptes et administrateurs
 
-Le compte admin est défini par l'environnement (aucune donnée en base) :
+Les comptes vivent dans la table `User` (hash **Argon2id**, jamais de mot de
+passe en clair). Créer le **premier** administrateur :
 
 ```bash
-npm run admin:hash -- "TonMotDePasseSolide"
+npm run admin:seed -- admin@exemple.com "MotDePasseSolide"
+# ou, si ADMIN_EMAIL / ADMIN_PASSWORD_HASH sont dans l'environnement :
+npm run admin:seed
 ```
 
-Le script affiche deux versions du hash : la **valeur brute** (à coller dans
-l'interface Vercel) et la **ligne `.env` prête à l'emploi** (les `$` y sont
-échappés en `\$`, exigence de Next.js). Définir aussi `ADMIN_EMAIL`,
-redémarrer — `/login` accepte désormais ce couple email / mot de passe.
+Ensuite, tout se gère depuis **Administration → Utilisateurs** : création
+de comptes (ex. l'accès de ton client), rôles (`ADMIN` / `USER`,
+`MODERATOR` prévu), réinitialisation de mot de passe, désactivation,
+suppression. Garde-fous intégrés : impossible de supprimer / rétrograder /
+désactiver le **dernier administrateur actif** ou son **propre compte**.
 
-Pour changer de mot de passe : régénérer un hash et remplacer la variable.
+## Importer des maps (Asset Manager)
+
+**Administration → Assets** : créer une map (la structure de dossiers est
+générée), puis glisser-déposer les plans (`1F.png`, `2F.png`, `B1`, `RDC`,
+`Roof`… — l'étage est détecté par le nom) et les screenshots (1 ou 500
+fichiers : copie, miniature WebP, entrée en base, progression et erreurs
+par fichier, aucun écrasement). Bouton **« Commencer le placement »** →
+l'atelier s'ouvre sur le premier screenshot non placé.
+
+L'import s'effectue **en local** (l'hébergement Vercel est en lecture
+seule — l'interface l'indique) ; déployer les assets = `git commit + push`.
+L'ancienne méthode (déposer les dossiers à la main puis « Synchroniser »)
+reste entièrement fonctionnelle : les deux alimentent la même structure.
 
 ---
 

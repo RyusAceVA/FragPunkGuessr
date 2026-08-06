@@ -48,3 +48,38 @@ export const createTagSchema = z.object({
   name: z.string().trim().min(1, "Le nom est requis").max(30),
 });
 export type CreateTagInput = z.infer<typeof createTagSchema>;
+
+// ---------------------------------------------------------------------------
+// Utilisateurs
+// ---------------------------------------------------------------------------
+
+import { userRoleSchema } from "@/types";
+
+const emailSchema = z.email("Email invalide");
+const usernameSchema = z
+  .string()
+  .trim()
+  .min(3, "3 caractères minimum")
+  .max(30, "30 caractères maximum");
+const passwordSchema = z
+  .string()
+  .min(8, "8 caractères minimum")
+  .max(200, "200 caractères maximum");
+
+export const createUserSchema = z.object({
+  email: emailSchema,
+  username: usernameSchema,
+  password: passwordSchema,
+  role: userRoleSchema,
+});
+export type CreateUserInput = z.infer<typeof createUserSchema>;
+
+/** Mise à jour partielle — `password` = réinitialisation du mot de passe. */
+export const updateUserSchema = z.object({
+  email: emailSchema.optional(),
+  username: usernameSchema.optional(),
+  role: userRoleSchema.optional(),
+  isActive: z.boolean().optional(),
+  password: passwordSchema.optional(),
+});
+export type UpdateUserInput = z.infer<typeof updateUserSchema>;

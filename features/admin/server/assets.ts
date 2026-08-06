@@ -1,7 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { assetsRoot } from "@/lib/server/assets";
+import {
+  assetsRoot,
+  parseFloorLevel,
+  readImageSize,
+} from "@/lib/server/assets";
 
 /**
  * Accès disque au dossier d'assets (ASSETS_DIR, par défaut ./Maps).
@@ -39,75 +43,6 @@ export interface ScannedMap {
 export interface ScanResult {
   maps: ScannedMap[];
   warnings: string[];
-}
-
-/**
- * Niveau d'un étage à partir du nom de fichier :
- * "1F"/"1" → 1, "2F" → 2, "B1" → -1, "RDC"/"0F" → 0.
- */
-export function parseFloorLevel(stem: string): number | null {
-  const s = stem.trim().toUpperCase();
-  if (s === "RDC") return 0;
-  let m = /^B(\d+)$/.exec(s);
-  if (m) return -Number(m[1]);
-  m = /^(-?\d+)F?$/.exec(s);
-  if (m) return Number(m[1]);
-  m = /^(?:ETAGE|FLOOR|F)[-_ ]?(-?\d+)$/.exec(s);
-  if (m) return Number(m[1]);
-  return null;
-}
-
-/**
- * Dimensions d'une image PNG ou WebP en lisant uniquement son en-tête
- * (pas de dépendance native, instantané même sur de gros fichiers).
- */
-export async function readImageSize(
-  absolutePath: string,
-): Promise<{ width: number; height: number } | null> {
-  const handle = await fs.open(absolutePath, "r");
-  try {
-    const buf = Buffer.alloc(32);
-    await handle.read(buf, 0, 32, 0);
-
-    // PNG : signature 8 octets, IHDR → largeur/hauteur en big-endian
-    const PNG_SIG = Buffer.from([
-      0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
-    ]);
-    if (buf.subarray(0, 8).equals(PNG_SIG)) {
-      return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
-    }
-
-    // WebP : conteneur RIFF, 3 variantes de flux
-    if (
-      buf.toString("ascii", 0, 4) === "RIFF" &&
-      buf.toString("ascii", 8, 12) === "WEBP"
-    ) {
-      const fourcc = buf.toString("ascii", 12, 16);
-      if (fourcc === "VP8X") {
-        return {
-          width: 1 + buf.readUIntLE(24, 3),
-          height: 1 + buf.readUIntLE(27, 3),
-        };
-      }
-      if (fourcc === "VP8L") {
-        const bits = buf.readUInt32LE(21);
-        return {
-          width: (bits & 0x3fff) + 1,
-          height: ((bits >> 14) & 0x3fff) + 1,
-        };
-      }
-      if (fourcc === "VP8 ") {
-        return {
-          width: buf.readUInt16LE(26) & 0x3fff,
-          height: buf.readUInt16LE(28) & 0x3fff,
-        };
-      }
-    }
-
-    return null;
-  } finally {
-    await handle.close();
-  }
 }
 
 async function listImageFiles(dir: string): Promise<string[]> {

@@ -1,6 +1,7 @@
 "use client";
 
 import { FolderSync, ImageOff, Loader2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef } from "react";
 import { toast } from "sonner";
 
@@ -52,13 +53,49 @@ export function AdminWorkbench() {
   const update = useUpdateScreenshot();
   const sync = useSyncAssets();
 
+  // Deep-link depuis l'Asset Manager : /admin?map=<id>&placement=1
+  const searchParams = useSearchParams();
+  const deepLinkMapId = searchParams.get("map");
+  const deepLinkPlacement = searchParams.get("placement") === "1";
+  const deepLinkDoneRef = useRef(false);
+
   // Auto-sélection de la première map / du premier étage au chargement
   useEffect(() => {
+    if (deepLinkMapId) return; // le deep-link choisit la map
     if (!store.selectedMapId && maps.length > 0) {
       const first = maps[0];
       store.selectMap(first.id, first.floors[0]?.id ?? null);
     }
-  }, [maps, store]);
+  }, [maps, store, deepLinkMapId]);
+
+  // Étape 1 du deep-link : sélectionner la map demandée
+  useEffect(() => {
+    if (!deepLinkMapId || deepLinkDoneRef.current || maps.length === 0) return;
+    const map = maps.find((m) => m.id === deepLinkMapId);
+    if (!map) return;
+    if (store.selectedMapId !== map.id) {
+      store.selectMap(map.id, map.floors[0]?.id ?? null);
+    }
+    if (!deepLinkPlacement) deepLinkDoneRef.current = true;
+  }, [deepLinkMapId, deepLinkPlacement, maps, store]);
+
+  // Étape 2 : ouvrir le premier screenshot non placé (placement en série)
+  useEffect(() => {
+    if (
+      !deepLinkMapId ||
+      !deepLinkPlacement ||
+      deepLinkDoneRef.current ||
+      store.selectedMapId !== deepLinkMapId ||
+      !screenshotsQuery.data
+    ) {
+      return;
+    }
+    deepLinkDoneRef.current = true;
+    const firstUnplaced = screenshotsQuery.data
+      .filter((s) => !isPlaced(s))
+      .sort((a, b) => a.code.localeCompare(b.code))[0];
+    if (firstUnplaced) store.selectScreenshot(firstUnplaced.id);
+  }, [deepLinkMapId, deepLinkPlacement, screenshotsQuery.data, store]);
 
   const placedByFloor = useMemo(() => {
     const counts = new Map<string, number>();

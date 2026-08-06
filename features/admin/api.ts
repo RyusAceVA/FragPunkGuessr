@@ -2,11 +2,16 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import type { UpdateScreenshotInput } from "./schemas";
+import type {
+  CreateUserInput,
+  UpdateScreenshotInput,
+  UpdateUserInput,
+} from "./schemas";
 import type {
   AdminMap,
   AdminScreenshot,
   AdminTag,
+  AdminUser,
   AdminZone,
   SyncSummary,
 } from "./types";
@@ -15,6 +20,7 @@ import type {
 export const adminKeys = {
   maps: ["admin", "maps"] as const,
   tags: ["admin", "tags"] as const,
+  users: ["admin", "users"] as const,
   screenshots: (mapId: string) => ["admin", "screenshots", mapId] as const,
 };
 
@@ -157,6 +163,56 @@ export function useUpdateScreenshot() {
       if (input.tags !== undefined) {
         void queryClient.invalidateQueries({ queryKey: adminKeys.tags });
       }
+    },
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Utilisateurs
+// ---------------------------------------------------------------------------
+
+export function useAdminUsers(search: string) {
+  return useQuery({
+    queryKey: [...adminKeys.users, search],
+    queryFn: () =>
+      fetchJson<AdminUser[]>(
+        `/api/admin/users?search=${encodeURIComponent(search)}`,
+      ),
+    placeholderData: (previous) => previous,
+  });
+}
+
+export function useCreateUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: CreateUserInput) =>
+      fetchJson<AdminUser>("/api/admin/users", jsonInit("POST", input)),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: adminKeys.users });
+    },
+  });
+}
+
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, input }: { id: string; input: UpdateUserInput }) =>
+      fetchJson<AdminUser>(`/api/admin/users/${id}`, jsonInit("PATCH", input)),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: adminKeys.users });
+    },
+  });
+}
+
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id }: { id: string }) =>
+      fetchJson<{ ok: boolean }>(`/api/admin/users/${id}`, {
+        method: "DELETE",
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: adminKeys.users });
     },
   });
 }

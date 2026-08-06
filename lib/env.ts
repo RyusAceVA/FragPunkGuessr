@@ -13,17 +13,14 @@ const serverEnvSchema = z.object({
     .default("development"),
   ASSETS_DIR: z.string().min(1).default("Maps"),
 
-  // --- Authentification (admin) ---------------------------------------------
+  // --- Authentification ------------------------------------------------------
   AUTH_SECRET: z
     .string()
     .min(32, "AUTH_SECRET doit faire au moins 32 caractères (npx auth secret)"),
-  ADMIN_EMAIL: z.email("ADMIN_EMAIL doit être un email valide"),
-  ADMIN_PASSWORD_HASH: z
-    .string()
-    .startsWith(
-      "$argon2",
-      "ADMIN_PASSWORD_HASH doit être un hash Argon2 (npm run admin:hash)",
-    ),
+  // Optionnels : utilisés uniquement par `npm run admin:seed` (bootstrap du
+  // premier administrateur) — l'authentification lit la table User
+  ADMIN_EMAIL: z.email().optional(),
+  ADMIN_PASSWORD_HASH: z.string().optional(),
 });
 
 export const env = serverEnvSchema.parse(process.env);

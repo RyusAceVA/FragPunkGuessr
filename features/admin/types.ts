@@ -1,4 +1,4 @@
-import type { Difficulty } from "@/types";
+import type { Difficulty, UserRole } from "@/types";
 
 /**
  * DTO du domaine admin, partagés entre les services serveur
@@ -59,6 +59,18 @@ export interface AdminScreenshot {
   notes: string | null;
   tags: string[];
   isActive: boolean;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  username: string;
+  role: UserRole;
+  isActive: boolean;
+  /** ISO 8601 */
+  createdAt: string;
+  /** L'utilisateur de la ligne est celui actuellement connecté */
+  isSelf: boolean;
 }
 
 export interface SyncSummary {
