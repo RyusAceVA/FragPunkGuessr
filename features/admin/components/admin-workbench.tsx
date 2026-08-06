@@ -324,7 +324,6 @@ export function AdminWorkbench() {
             })
           }
           disabled={sync.isPending}
-          className="glow-primary"
         >
           <FolderSync data-icon="inline-start" />
           {t("sync")}

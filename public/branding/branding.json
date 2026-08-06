@@ -3,11 +3,11 @@
   "$api": "https://raw.githubusercontent.com/RyusAceVA/fragpunk-assets/main/<chemin>/<fichier>",
   "slots": {
     "home.hero": {
-      "src": "https://raw.githubusercontent.com/RyusAceVA/fragpunk-assets/main/lancers/portraits/Icon_Lancers_Head01__H_208001010.png",
+      "src": "https://raw.githubusercontent.com/RyusAceVA/fragpunk-assets/main/lancers/art/C025_calamity.png",
       "alt": ""
     },
     "play.start": {
-      "src": "https://raw.githubusercontent.com/RyusAceVA/fragpunk-assets/main/lancers/portraits/Icon_Lancers_Head01__H_208002050.png",
+      "src": "https://raw.githubusercontent.com/RyusAceVA/fragpunk-assets/main/lancers/skins_icon/Icon_Lancers_Roleskin_S2__C010.png",
       "alt": ""
     },
     "login.panel": {

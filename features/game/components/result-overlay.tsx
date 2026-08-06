@@ -103,7 +103,7 @@ function ResultMap({ result }: { result: RoundResult }) {
       </div>
 
       {/* Noms de map/étage — jamais traduits */}
-      <span className="clip-slash absolute top-2 left-2 z-10 bg-foreground px-2.5 py-1 font-heading text-xs font-bold tracking-wider text-background uppercase italic">
+      <span className="clip-slash absolute top-2 left-2 z-10 bg-foreground px-2.5 py-1 font-heading text-xs font-bold tracking-wider text-background uppercase">
         {actual.mapName} · {actual.floorName}
       </span>
     </div>
@@ -222,7 +222,7 @@ export function ResultOverlay({
           </div>
 
           <div className="mt-auto">
-            <Button className="glow-primary w-full" size="lg" onClick={onNext}>
+            <Button className="w-full" size="lg" onClick={onNext}>
               {result.isLastRound ? (
                 <>
                   <ListOrdered data-icon="inline-start" />

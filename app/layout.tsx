@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
-import { Barlow_Condensed, Geist_Mono, Manrope } from "next/font/google";
+import { Chakra_Petch, Geist_Mono, Oswald } from "next/font/google";
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -10,17 +10,17 @@ import { siteConfig } from "@/lib/site-config";
 
 import "./globals.css";
 
-/* Corps : Manrope — lisible, moderne, neutre */
-const manrope = Manrope({
+/* Corps : Chakra Petch — techno arrondie, la voix du site officiel */
+const chakraPetch = Chakra_Petch({
   variable: "--font-sans",
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
-/* Display : Barlow Condensed — condensé italique capitales, ADN punk */
-const barlowCondensed = Barlow_Condensed({
+/* Display : Oswald — condensé droit capitales, façon titres FragPunk */
+const oswald = Oswald({
   variable: "--font-display",
   weight: ["500", "600", "700"],
-  style: ["normal", "italic"],
   subsets: ["latin"],
 });
 
@@ -51,10 +51,12 @@ export default async function RootLayout({
   const locale = await getLocale();
 
   return (
-    <html lang={locale} className="dark" data-scroll-behavior="smooth">
-      <body
-        className={`${manrope.variable} ${geistMono.variable} ${barlowCondensed.variable} flex min-h-dvh flex-col antialiased`}
-      >
+    <html
+      lang={locale}
+      className={`${chakraPetch.variable} ${geistMono.variable} ${oswald.variable} dark`}
+      data-scroll-behavior="smooth"
+    >
+      <body className="flex min-h-dvh flex-col antialiased">
         <NextIntlClientProvider>
           <AppProviders>
             <SiteHeader />

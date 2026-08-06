@@ -55,45 +55,49 @@
 
 /*
  * ═══════════════════════════════════════════════════════════════════
- *  FRAGPUNK GUESSR — DESIGN SYSTEM « INK & SIGNAL »
+ *  FRAGPUNK GUESSR — DESIGN SYSTEM « INK & SIGNAL » v2
  *  (documentation complète : DESIGN.md)
  *
- *  Principes hérités de la DA FragPunk, jamais copiés :
- *  – encre : fond noir chaud, texte blanc papier, contrastes francs ;
- *  – signal : magenta punk (action), lime (réussite/énergie),
- *    cyan (information) — toujours en accents, jamais en aplats ;
- *  – géométrie : angles vifs, coins entaillés (notch), diagonales ;
- *  – print : ombres dures décalées plutôt que flous, textures
- *    halftone/scanlines discrètes ;
- *  – typo : display condensé italique capitales (Barlow Condensed),
- *    corps Manrope, données Geist Mono.
+ *  Recettes extraites de la DA officielle (fragpunk.com), jamais
+ *  d'assets copiés :
+ *  – encre violette : fond violet très sombre, vignettes pourpres,
+ *    bandes diagonales violettes en coin ;
+ *  – signaux : rose punk #f438be (identité), lime acide #a2ff00 →
+ *    #e7ff18 (action), cyan (information) ;
+ *  – CTA holographiques : remplissage dégradé lime/menthe/cyan
+ *    irisé, texte encre, coins tranchés, éclats triangulaires ;
+ *  – slabs : bandeaux violets inclinés derrière les titres ;
+ *  – typo : display Oswald (condensé DROIT capitales, façon titres
+ *    officiels), corps Chakra Petch (techno), données Geist Mono.
  * ═══════════════════════════════════════════════════════════════════
  */
 :root {
-  /* — Palette encre — */
-  --background: oklch(0.145 0.01 300);
-  --foreground: oklch(0.955 0.006 90);
-  --card: oklch(0.185 0.012 300);
-  --card-foreground: oklch(0.955 0.006 90);
-  --popover: oklch(0.2 0.012 300);
-  --popover-foreground: oklch(0.955 0.006 90);
-  /* — Signaux — */
-  --primary: oklch(0.64 0.25 358);
+  /* — Palette encre violette — */
+  --background: oklch(0.16 0.033 296);
+  --foreground: oklch(0.96 0.006 90);
+  --card: oklch(0.2 0.038 296);
+  --card-foreground: oklch(0.96 0.006 90);
+  --popover: oklch(0.215 0.04 296);
+  --popover-foreground: oklch(0.96 0.006 90);
+  /* — Signaux (teintes du site officiel) — */
+  --primary: oklch(0.67 0.24 345);
   --primary-foreground: oklch(0.985 0.005 90);
-  --signal: oklch(0.88 0.2 128);
+  --signal: oklch(0.9 0.24 127);
   --info: oklch(0.8 0.12 210);
-  --secondary: oklch(0.25 0.02 300);
-  --secondary-foreground: oklch(0.955 0.006 90);
-  --muted: oklch(0.23 0.015 300);
-  --muted-foreground: oklch(0.67 0.015 300);
-  --accent: oklch(0.26 0.025 300);
-  --accent-foreground: oklch(0.955 0.006 90);
+  --grape: oklch(0.5 0.21 296);
+  --grape-bright: oklch(0.6 0.23 300);
+  --secondary: oklch(0.27 0.05 296);
+  --secondary-foreground: oklch(0.96 0.006 90);
+  --muted: oklch(0.25 0.04 296);
+  --muted-foreground: oklch(0.7 0.02 296);
+  --accent: oklch(0.29 0.055 296);
+  --accent-foreground: oklch(0.96 0.006 90);
   --destructive: oklch(0.62 0.22 28);
-  --border: oklch(0.955 0.006 90 / 12%);
-  --input: oklch(0.955 0.006 90 / 16%);
-  --ring: oklch(0.64 0.25 358 / 70%);
-  --chart-1: oklch(0.64 0.25 358);
-  --chart-2: oklch(0.88 0.2 128);
+  --border: oklch(0.96 0.006 90 / 12%);
+  --input: oklch(0.96 0.006 90 / 16%);
+  --ring: oklch(0.67 0.24 345 / 70%);
+  --chart-1: oklch(0.67 0.24 345);
+  --chart-2: oklch(0.9 0.24 127);
   --chart-3: oklch(0.8 0.12 210);
   --chart-4: oklch(0.8 0.14 85);
   --chart-5: oklch(0.72 0.17 150);
@@ -101,15 +105,15 @@
   --radius: 0.5rem;
   --notch: 14px;
   /* — Ombres print — */
-  --shadow-ink: oklch(0.08 0.01 300 / 85%);
-  --sidebar: oklch(0.17 0.012 300);
-  --sidebar-foreground: oklch(0.955 0.006 90);
-  --sidebar-primary: oklch(0.64 0.25 358);
+  --shadow-ink: oklch(0.09 0.02 296 / 85%);
+  --sidebar: oklch(0.18 0.035 296);
+  --sidebar-foreground: oklch(0.96 0.006 90);
+  --sidebar-primary: oklch(0.67 0.24 345);
   --sidebar-primary-foreground: oklch(0.985 0.005 90);
-  --sidebar-accent: oklch(0.26 0.025 300);
-  --sidebar-accent-foreground: oklch(0.955 0.006 90);
-  --sidebar-border: oklch(0.955 0.006 90 / 12%);
-  --sidebar-ring: oklch(0.64 0.25 358 / 70%);
+  --sidebar-accent: oklch(0.29 0.055 296);
+  --sidebar-accent-foreground: oklch(0.96 0.006 90);
+  --sidebar-border: oklch(0.96 0.006 90 / 12%);
+  --sidebar-ring: oklch(0.67 0.24 345 / 70%);
 }
 
 @layer base {
@@ -123,7 +127,7 @@
     @apply scroll-smooth font-sans antialiased;
   }
   ::selection {
-    background: oklch(0.64 0.25 358 / 40%);
+    background: oklch(0.67 0.24 345 / 40%);
   }
 }
 
@@ -132,14 +136,13 @@
   .font-heading {
     font-family: var(--font-display), var(--font-sans), sans-serif;
   }
-  /* Titre punk : condensé, capitales, italique, serré */
+  /* Titre punk : condensé DROIT, capitales, serré (façon officiel) */
   .display {
     font-family: var(--font-display), var(--font-sans), sans-serif;
-    font-style: italic;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.01em;
-    line-height: 0.95;
+    letter-spacing: 0.015em;
+    line-height: 1;
   }
   /* Étiquette technique : petites capitales espacées */
   .overline-label {
@@ -156,6 +159,136 @@
   }
   .text-signal {
     color: var(--signal);
+  }
+  /* Texte irisé lime/menthe/cyan — les grands titres officiels */
+  .text-holo {
+    background-image: linear-gradient(
+      100deg,
+      #a8f42e 0%,
+      #e9ffa0 22%,
+      #52f7c8 46%,
+      #bdff3d 68%,
+      #63e6ff 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  /* ── CTA holographique (recette des boutons officiels) ───────── */
+  /* Remplissage irisé + texte encre — à combiner avec .clip-cta    */
+  .holo-fill {
+    background-image: linear-gradient(
+      100deg,
+      #c8f542 0%,
+      #eaffb0 20%,
+      #7df7cf 45%,
+      #d3ff5c 68%,
+      #8ef0ff 88%,
+      #c8f542 100%
+    );
+    background-size: 180% 100%;
+    background-position: 0% 0%;
+    color: oklch(0.17 0.02 296);
+    transition: background-position 0.4s ease;
+  }
+  .holo-fill:hover {
+    background-position: 60% 0%;
+  }
+  /* Coins tranchés en diagonale opposée (haut-gauche / bas-droit) */
+  .clip-cta {
+    --cta-cut: 11px;
+    clip-path: polygon(
+      var(--cta-cut) 0,
+      100% 0,
+      100% calc(100% - var(--cta-cut)),
+      calc(100% - var(--cta-cut)) 100%,
+      0 100%,
+      0 var(--cta-cut)
+    );
+  }
+  /* Éclats triangulaires autour d'un CTA principal (hors découpe) */
+  .cta-shards {
+    position: relative;
+  }
+  .cta-shards::before,
+  .cta-shards::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+  .cta-shards::before {
+    top: -7px;
+    left: -9px;
+    border-left: 11px solid var(--signal);
+    border-bottom: 11px solid transparent;
+  }
+  .cta-shards::after {
+    right: -9px;
+    bottom: -7px;
+    border-right: 11px solid var(--signal);
+    border-top: 11px solid transparent;
+  }
+
+  /* ── Slab violet incliné derrière un titre (façon sections) ──── */
+  .slab {
+    position: relative;
+    display: inline-block;
+    isolation: isolate;
+    padding: 0.12em 0.55em 0.16em;
+  }
+  .slab::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    transform: skewX(-10deg);
+    background: linear-gradient(
+      100deg,
+      var(--grape) 0%,
+      var(--grape-bright) 78%,
+      oklch(0.75 0.15 200) 100%
+    );
+    box-shadow: 4px 4px 0 var(--shadow-ink);
+  }
+
+  /* ── Bandes violettes en coin (fonds de page officiels) ──────── */
+  /* Le conteneur doit être positionné (relative ou absolute)       */
+  .corner-bands::before,
+  .corner-bands::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: clamp(48px, 7vw, 96px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .corner-bands::before {
+    top: 0;
+    background:
+      linear-gradient(
+        115deg,
+        oklch(0.42 0.19 296) 0%,
+        oklch(0.5 0.21 296 / 60%) 18%,
+        transparent 42%
+      ),
+      linear-gradient(-65deg, oklch(0.45 0.2 300 / 70%) 0%, transparent 22%);
+    clip-path: polygon(0 0, 100% 0, 100% 32%, 0 100%);
+  }
+  .corner-bands::after {
+    bottom: 0;
+    background:
+      linear-gradient(
+        -65deg,
+        oklch(0.42 0.19 296) 0%,
+        oklch(0.5 0.21 296 / 60%) 18%,
+        transparent 46%
+      ),
+      linear-gradient(115deg, oklch(0.55 0.15 200 / 45%) 0%, transparent 20%);
+    clip-path: polygon(0 68%, 100% 0, 100% 100%, 0 100%);
   }
 
   /* ── Découpes (langage FragPunk : angles tranchés) ───────────── */
@@ -191,6 +324,10 @@
   }
   .hard-shadow-signal {
     box-shadow: 4px 4px 0 oklch(0.88 0.2 128 / 45%);
+  }
+  /* Ombre dure après découpe (suit la forme clip-path) */
+  .drop-ink {
+    filter: drop-shadow(3px 3px 0 var(--shadow-ink));
   }
   /* Halo réservé aux CTA principaux */
   .glow-primary {
@@ -244,6 +381,20 @@
       black 40%,
       transparent 100%
     );
+  }
+  /* Vignette pourpre : profondeur des fonds officiels */
+  .vignette-grape {
+    background:
+      radial-gradient(
+        ellipse 90% 70% at 70% 20%,
+        oklch(0.3 0.09 296 / 55%),
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 70% 60% at 15% 85%,
+        oklch(0.28 0.1 310 / 45%),
+        transparent 65%
+      );
   }
 
   /* ── Séparateur diagonal (signature de section) ──────────────── */

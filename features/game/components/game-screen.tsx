@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Crosshair, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -33,6 +34,9 @@ export function GameScreen() {
   const { startSession, validateGuess, isStartingSession, isValidating } =
     useRoundManager();
 
+  // L'image de la manche est-elle affichée ? (sinon : écran de chargement)
+  const [screenshotReady, setScreenshotReady] = useState(false);
+
   if (phase === "idle" || !session) {
     return (
       <StartScreen isStarting={isStartingSession} onStart={startSession} />
@@ -54,11 +58,14 @@ export function GameScreen() {
 
   return (
     <div className="relative h-full overflow-hidden">
-      <ScreenshotView imageUrl={currentRound.imageUrl} />
+      <ScreenshotView
+        imageUrl={currentRound.imageUrl}
+        onReadyChange={setScreenshotReady}
+      />
 
       {/* Chrome de la manche — aucune info sur la map, seulement la progression */}
       <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
-        <span className="clip-slash bg-foreground px-3 py-1.5 font-heading text-xs font-bold tracking-wider text-background uppercase italic tabular-nums">
+        <span className="clip-slash bg-foreground px-3 py-1.5 font-heading text-xs font-bold tracking-wider text-background uppercase tabular-nums">
           {t("chip", {
             index: currentRound.index,
             total: session.roundCount,
@@ -77,22 +84,24 @@ export function GameScreen() {
 
       {/* Bouton Deviner */}
       <AnimatePresence>
-        {phase === "round" && !panelOpen && (
+        {phase === "round" && !panelOpen && screenshotReady && (
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 24 }}
             transition={{ duration: 0.25 }}
-            className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2"
+            className="absolute bottom-10 left-1/2 z-20 -translate-x-1/2"
           >
-            <Button
-              size="lg"
-              className="glow-primary px-8"
-              onClick={() => setPanelOpen(true)}
-            >
-              <Crosshair data-icon="inline-start" />
-              {t("guess")}
-            </Button>
+            <span className="cta-shards inline-flex">
+              <Button
+                size="xl"
+                className="px-12 text-lg"
+                onClick={() => setPanelOpen(true)}
+              >
+                <Crosshair data-icon="inline-start" className="size-5" />
+                {t("guess")}
+              </Button>
+            </span>
           </motion.div>
         )}
       </AnimatePresence>

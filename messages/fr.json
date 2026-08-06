@@ -88,7 +88,8 @@
       "chip": "Manche {index}/{total}",
       "quit": "Abandonner la partie",
       "guess": "Deviner",
-      "screenshotAlt": "Screenshot à deviner"
+      "screenshotAlt": "Screenshot à deviner",
+      "loading": "Chargement… <signal>({percent}%)</signal>"
     },
     "panel": {
       "whichMap": "Quelle est cette map ?",

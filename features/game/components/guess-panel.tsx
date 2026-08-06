@@ -126,7 +126,7 @@ export function GuessPanel({ isValidating, onValidate }: GuessPanelProps) {
 
           <footer className="space-y-2 border-t border-border p-3">
             <Button
-              className="glow-primary w-full"
+              className="w-full"
               size="lg"
               disabled={!pin || isValidating}
               onClick={onValidate}

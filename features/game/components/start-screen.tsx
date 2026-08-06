@@ -22,13 +22,17 @@ export function StartScreen({ isStarting, onStart }: StartScreenProps) {
   const t = useTranslations("play.start");
 
   return (
-    <div className="bg-grid mask-fade-edges relative grid h-full items-center overflow-hidden px-4 sm:px-8 lg:grid-cols-[1.2fr_1fr]">
-      <div className="relative z-10 mx-auto max-w-2xl space-y-8 text-center lg:text-left">
+    <div className="corner-bands relative grid h-full items-center overflow-x-hidden overflow-y-auto px-4 py-8 sm:px-8 lg:grid-cols-[1.2fr_1fr]">
+      <div
+        className="bg-grid mask-fade-edges vignette-grape absolute inset-0"
+        aria-hidden
+      />
+      <div className="relative z-10 mx-auto max-w-2xl space-y-6 text-center sm:space-y-8 lg:text-left">
         <FadeIn>
           <h1 className="display text-5xl text-balance sm:text-7xl">
             {t("titleA")}
             <br />
-            <span className="text-primary">{t("titleB")}</span>
+            <span className="text-holo">{t("titleB")}</span>
           </h1>
         </FadeIn>
         <FadeIn delay={0.1}>
@@ -37,30 +41,36 @@ export function StartScreen({ isStarting, onStart }: StartScreenProps) {
           </p>
         </FadeIn>
         <FadeIn delay={0.18}>
-          <Button
-            size="lg"
-            className="glow-primary px-10 text-base"
-            onClick={onStart}
-            disabled={isStarting}
-          >
-            {isStarting ? (
-              <Loader2 className="animate-spin" data-icon="inline-start" />
-            ) : (
-              <Play data-icon="inline-start" />
-            )}
-            {t("cta")}
-          </Button>
+          <span className="cta-shards inline-flex">
+            <Button
+              size="xl"
+              className="px-10"
+              onClick={onStart}
+              disabled={isStarting}
+            >
+              {isStarting ? (
+                <Loader2 className="animate-spin" data-icon="inline-start" />
+              ) : (
+                <Play data-icon="inline-start" />
+              )}
+              {t("cta")}
+            </Button>
+          </span>
         </FadeIn>
       </div>
 
       {/* Slot d'illustration configurable (branding.json) */}
-      <FadeIn delay={0.15} className="hidden h-full lg:block">
-        <div className="relative flex h-full items-end">
+      <FadeIn delay={0.15} className="relative z-10 hidden h-full lg:block">
+        <div className="absolute inset-0 flex items-end justify-center">
           <div
-            className="stripes-primary absolute inset-x-0 top-1/4 bottom-0 -skew-x-6 opacity-10"
+            className="absolute inset-x-8 bottom-0 h-3/5 -skew-x-3 bg-[linear-gradient(115deg,var(--grape),var(--grape-bright))] opacity-50"
             aria-hidden
           />
-          <Artwork slot="play.start" className="relative h-4/5 w-full" />
+          <Artwork
+            slot="play.start"
+            className="relative h-[85%] w-full"
+            imgClassName="object-contain object-bottom"
+          />
         </div>
       </FadeIn>
     </div>

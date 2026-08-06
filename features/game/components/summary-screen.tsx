@@ -67,7 +67,7 @@ function RoundRow({ entry }: { entry: RoundHistoryEntry }) {
             <p className="text-[10px] text-muted-foreground">{t("pixels")}</p>
           </>
         ) : (
-          <p className="font-heading text-xs font-bold text-destructive uppercase italic">
+          <p className="font-heading text-xs font-bold text-destructive uppercase">
             {t("lost")}
           </p>
         )}
@@ -130,7 +130,7 @@ export function SummaryScreen({
       <FadeIn delay={0.3}>
         <div className="flex flex-col gap-2 pt-2 sm:flex-row">
           <Button
-            className="glow-primary flex-1"
+            className="flex-1"
             size="lg"
             onClick={onNewGame}
             disabled={isRestarting}

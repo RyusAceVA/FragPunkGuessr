@@ -19,12 +19,15 @@ export default async function HomePage() {
   return (
     <>
       {/* ── Héros ─────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden">
-        <div className="bg-grid mask-fade-edges absolute inset-0" aria-hidden />
-        <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.2fr_1fr] lg:py-24">
+      <section className="corner-bands relative overflow-hidden">
+        <div
+          className="bg-grid mask-fade-edges vignette-grape absolute inset-0"
+          aria-hidden
+        />
+        <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.2fr_1fr] lg:py-24">
           <div className="space-y-6 text-center lg:text-left">
             <FadeIn>
-              <span className="clip-slash inline-block bg-signal px-3 py-1 font-heading text-xs font-bold tracking-widest text-background uppercase italic">
+              <span className="slab font-heading text-xs font-bold tracking-widest text-foreground uppercase">
                 {t("badge")}
               </span>
             </FadeIn>
@@ -32,7 +35,7 @@ export default async function HomePage() {
               <h1 className="display text-5xl text-balance sm:text-7xl">
                 {t("titleA")}
                 <br />
-                <span className="text-primary">{t("titleB")}</span>
+                <span className="text-holo">{t("titleB")}</span>
               </h1>
             </FadeIn>
             <FadeIn delay={0.16}>
@@ -41,17 +44,18 @@ export default async function HomePage() {
               </p>
             </FadeIn>
             <FadeIn delay={0.24}>
-              <div className="flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
+              <div className="flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start">
+                <span className="cta-shards inline-flex">
+                  <Button
+                    size="xl"
+                    nativeButton={false}
+                    render={<Link href="/play" />}
+                  >
+                    {t("ctaPlay")}
+                  </Button>
+                </span>
                 <Button
-                  size="lg"
-                  className="glow-primary px-8"
-                  nativeButton={false}
-                  render={<Link href="/play" />}
-                >
-                  {t("ctaPlay")}
-                </Button>
-                <Button
-                  size="lg"
+                  size="xl"
                   variant="outline"
                   nativeButton={false}
                   render={<Link href="/stats" />}
@@ -66,10 +70,14 @@ export default async function HomePage() {
           <FadeIn delay={0.2} className="hidden lg:block">
             <div className="relative">
               <div
-                className="stripes-primary absolute -inset-x-4 top-8 bottom-0 -skew-x-6 opacity-15"
+                className="absolute -inset-x-3 top-6 -bottom-3 -skew-x-3 bg-[linear-gradient(115deg,var(--grape),var(--grape-bright))] opacity-60"
                 aria-hidden
               />
-              <Artwork slot="home.hero" className="relative h-80" />
+              <Artwork
+                slot="home.hero"
+                className="clip-notch drop-ink relative h-105"
+                imgClassName="object-cover object-top drop-shadow-none"
+              />
             </div>
           </FadeIn>
         </div>

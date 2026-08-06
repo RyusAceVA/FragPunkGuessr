@@ -95,7 +95,6 @@ function ScreenshotsPanel({
         {unplaced > 0 && (
           <Button
             size="sm"
-            className="glow-primary"
             onClick={() => router.push(`/admin?map=${map.id}&placement=1`)}
           >
             <Crosshair data-icon="inline-start" />

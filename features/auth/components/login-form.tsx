@@ -56,12 +56,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
         </p>
       )}
 
-      <Button
-        type="submit"
-        size="lg"
-        className="glow-primary w-full"
-        disabled={isPending}
-      >
+      <Button type="submit" size="lg" className="w-full" disabled={isPending}>
         {isPending ? (
           <Loader2 className="animate-spin" data-icon="inline-start" />
         ) : (

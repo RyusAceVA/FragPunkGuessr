@@ -86,7 +86,7 @@ export function CreateMapDialog({ disabled, onCreated }: CreateMapDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <Button
-        className="glow-primary w-full"
+        className="w-full"
         onClick={() => setOpen(true)}
         disabled={disabled}
       >

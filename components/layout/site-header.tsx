@@ -92,12 +92,7 @@ export function SiteHeader() {
         <div className="hidden items-center gap-2 md:flex">
           <LanguageSwitcher />
           {/* render → <a> : nativeButton={false} requis par Base UI */}
-          <Button
-            size="sm"
-            className="glow-primary"
-            nativeButton={false}
-            render={<Link href="/play" />}
-          >
+          <Button size="sm" nativeButton={false} render={<Link href="/play" />}>
             {t("launch")}
           </Button>
           {session?.user && (

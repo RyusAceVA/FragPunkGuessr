@@ -10,12 +10,12 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "clip-slash bg-primary text-primary-foreground italic [a]:hover:bg-primary/80",
+          "clip-slash bg-primary text-primary-foreground [a]:hover:bg-primary/80",
         secondary:
           "rounded-sm bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
         destructive:
-          "clip-slash bg-destructive text-destructive-foreground italic focus-visible:ring-destructive/20 [a]:hover:bg-destructive/80",
-        signal: "clip-slash bg-signal text-background italic",
+          "clip-slash bg-destructive text-destructive-foreground focus-visible:ring-destructive/20 [a]:hover:bg-destructive/80",
+        signal: "clip-slash bg-signal text-background",
         outline:
           "rounded-sm border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
         ghost:

@@ -88,7 +88,8 @@
       "chip": "Round {index}/{total}",
       "quit": "Leave the match",
       "guess": "Guess",
-      "screenshotAlt": "Screenshot to guess"
+      "screenshotAlt": "Screenshot to guess",
+      "loading": "Loading… <signal>({percent}%)</signal>"
     },
     "panel": {
       "whichMap": "Which map is this?",

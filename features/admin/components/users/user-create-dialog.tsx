@@ -70,7 +70,7 @@ export function UserCreateDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button className="glow-primary" onClick={() => setOpen(true)}>
+      <Button onClick={() => setOpen(true)}>
         <UserPlus data-icon="inline-start" />
         {t("create")}
       </Button>
