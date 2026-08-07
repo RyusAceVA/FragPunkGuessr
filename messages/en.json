@@ -182,7 +182,8 @@
       "zoomOut": "Zoom out",
       "fit": "Fit to screen",
       "validate": "Lock in my answer",
-      "stillEditable": "You can still change map, floor, or move your pin."
+      "stillEditable": "You can still change map, floor, or move your pin.",
+      "stillEditableLocked": "You can still change floor or move your pin."
     },
     "result": {
       "wrongMap": "Wrong map",

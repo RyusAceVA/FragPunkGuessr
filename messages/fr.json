@@ -182,7 +182,8 @@
       "zoomOut": "Zoom arrière",
       "fit": "Ajuster à l'écran",
       "validate": "Valider ma réponse",
-      "stillEditable": "Tu peux encore changer de map, d'étage, ou déplacer ton pin."
+      "stillEditable": "Tu peux encore changer de map, d'étage, ou déplacer ton pin.",
+      "stillEditableLocked": "Tu peux encore changer d'étage ou déplacer ton pin."
     },
     "result": {
       "wrongMap": "Mauvaise map",

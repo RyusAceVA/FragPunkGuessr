@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Check, ChevronLeft, Loader2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,10 +19,16 @@ interface GuessPanelProps {
 }
 
 /**
- * Panneau de réponse en deux étapes obligatoires :
+ * Panneau de réponse en deux étapes :
  * 1. identifier la map (aucune n'est présélectionnée) ;
  * 2. choisir l'étage et poser le pin sur le plan.
  * Fermer le panneau conserve toute la réponse en cours.
+ *
+ * Quand le mode de la partie impose déjà une map (Map Training :
+ * options.mapId), l'étape 1 disparaît : le panneau s'ouvre directement
+ * sur le plan de cette map et le retour à la liste est masqué. Le
+ * comportement est piloté par l'information connue (mapId), jamais par
+ * l'id du mode — tout futur mode à map imposée en hérite tel quel.
  */
 export function GuessPanel({ isValidating, onValidate }: GuessPanelProps) {
   const t = useTranslations("play.panel");
@@ -32,9 +39,18 @@ export function GuessPanel({ isValidating, onValidate }: GuessPanelProps) {
   const clearGuessMap = useGameStore((s) => s.clearGuessMap);
   const selectGuessFloor = useGameStore((s) => s.selectGuessFloor);
   const setPanelOpen = useGameStore((s) => s.setPanelOpen);
+  /** Map imposée par le mode de la partie en cours (null = libre) */
+  const lockedMapId = useGameStore((s) => s.createInput?.mapId ?? null);
 
   const mapsQuery = usePlayableMaps();
   const maps = mapsQuery.data ?? [];
+
+  // Map connue d'avance : présélection dès que la liste est disponible
+  useEffect(() => {
+    if (!lockedMapId || guessMapId !== null || !mapsQuery.data) return;
+    const map = mapsQuery.data.find((m) => m.id === lockedMapId);
+    if (map) selectGuessMap(map.id, map.floors[0]?.id ?? null);
+  }, [lockedMapId, guessMapId, mapsQuery.data, selectGuessMap]);
   const selectedMap = maps.find((m) => m.id === guessMapId) ?? null;
   const floors = selectedMap
     ? [...selectedMap.floors].sort((a, b) => b.level - a.level)
@@ -56,21 +72,29 @@ export function GuessPanel({ isValidating, onValidate }: GuessPanelProps) {
       <header className="flex items-center gap-2 border-b border-border px-3 py-3">
         {selectedMap ? (
           <>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={clearGuessMap}
-              aria-label={t("changeMap")}
+            {/* Map imposée par le mode : pas de retour à la liste */}
+            {!lockedMapId && (
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={clearGuessMap}
+                aria-label={t("changeMap")}
+              >
+                <ChevronLeft />
+              </Button>
+            )}
+            <h2
+              className={cn(
+                "flex-1 truncate font-heading text-lg font-bold tracking-wide uppercase",
+                lockedMapId && "px-1",
+              )}
             >
-              <ChevronLeft />
-            </Button>
-            <h2 className="flex-1 truncate font-heading text-lg font-bold tracking-wide uppercase">
               {selectedMap.name}
             </h2>
           </>
         ) : (
           <h2 className="flex-1 px-1 font-heading text-lg font-bold tracking-wide uppercase">
-            {t("whichMap")}
+            {lockedMapId ? "…" : t("whichMap")}
           </h2>
         )}
         <Button
@@ -84,11 +108,18 @@ export function GuessPanel({ isValidating, onValidate }: GuessPanelProps) {
       </header>
 
       {!selectedMap ? (
-        <MapPicker
-          maps={maps}
-          isLoading={mapsQuery.isLoading}
-          onPick={(map) => selectGuessMap(map.id, map.floors[0]?.id ?? null)}
-        />
+        lockedMapId ? (
+          // Map imposée, liste en cours de chargement : jamais de picker
+          <div className="flex flex-1 items-center justify-center">
+            <Loader2 className="size-6 animate-spin text-primary" aria-hidden />
+          </div>
+        ) : (
+          <MapPicker
+            maps={maps}
+            isLoading={mapsQuery.isLoading}
+            onPick={(map) => selectGuessMap(map.id, map.floors[0]?.id ?? null)}
+          />
+        )
       ) : (
         <>
           {selectedMap.floors.length > 1 && (
@@ -139,7 +170,7 @@ export function GuessPanel({ isValidating, onValidate }: GuessPanelProps) {
               {t("validate")}
             </Button>
             <p className="text-center text-xs text-muted-foreground">
-              {t("stillEditable")}
+              {t(lockedMapId ? "stillEditableLocked" : "stillEditable")}
             </p>
           </footer>
         </>
