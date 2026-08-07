@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { fetchJson, jsonInit } from "@/lib/fetch-json";
 
-import type { SubmitGuessInput } from "./schemas";
+import type { CreateSessionInput, SubmitGuessInput } from "./schemas";
 import type {
   GameSessionState,
   GuessResponse,
@@ -28,8 +28,8 @@ export function usePlayableMaps() {
 
 export function useStartSession() {
   return useMutation({
-    mutationFn: () =>
-      fetchJson<GameSessionState>("/api/game/session", { method: "POST" }),
+    mutationFn: (input: CreateSessionInput) =>
+      fetchJson<GameSessionState>("/api/game/session", jsonInit("POST", input)),
   });
 }
 

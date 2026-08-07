@@ -69,6 +69,8 @@ export interface HistoryEntry {
   sessionId: string;
   completedAt: string;
   score: number;
+  /** Mode de jeu de la partie (CLASSIC, MAP_TRAINING…) */
+  mode: string;
   maxScore: number;
   accuracyPct: number;
   durationMs: number;
@@ -140,6 +142,8 @@ export interface SessionDetailRound {
 export interface SessionDetail {
   sessionId: string;
   completedAt: string | null;
+  /** Mode de jeu de la partie */
+  mode: string;
   score: number;
   maxScore: number;
   accuracyPct: number;

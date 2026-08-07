@@ -20,6 +20,7 @@ function formatDuration(ms: number): string {
 /** Les 20 dernières parties — chaque ligne ouvre la relecture. */
 export function HistoryList({ history }: { history: HistoryEntry[] }) {
   const t = useTranslations("stats.history");
+  const tModes = useTranslations("modes");
   const format = useFormatter();
 
   if (history.length === 0) {
@@ -53,7 +54,10 @@ export function HistoryList({ history }: { history: HistoryEntry[] }) {
               </p>
             </div>
 
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 space-y-1">
+              <Badge variant="signal" className="text-[10px]">
+                {tModes(entry.mode)}
+              </Badge>
               <div className="flex flex-wrap gap-1">
                 {/* Noms de maps — jamais traduits */}
                 {entry.mapNames.map((name) => (

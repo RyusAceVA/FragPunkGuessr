@@ -2,22 +2,29 @@
 
 import { toast } from "sonner";
 
+import type { CreateSessionInput } from "../schemas";
 import { useStartSession, useSubmitGuess } from "../api";
 import { useGameStore } from "../store";
 
 /**
  * Chef d'orchestre d'une partie : relie les appels serveur au store.
- * C'est ici que se brancheront le score cumulé, les défis quotidiens
- * (seed) et les futurs modes de jeu.
+ * Le mode de jeu n'est qu'un paramètre transmis au serveur — toute la
+ * logique de mode vit dans features/game/modes (registre).
  */
 export function useRoundManager() {
   const store = useGameStore();
   const startSessionMutation = useStartSession();
   const submitGuessMutation = useSubmitGuess();
 
-  /** Lance une nouvelle partie (depuis l'accueil ou le récapitulatif). */
-  function startSession() {
-    startSessionMutation.mutate(undefined, {
+  /**
+   * Lance une partie. Sans argument (« Rejouer » du récapitulatif),
+   * reprend le mode et les options de la partie précédente.
+   */
+  function startSession(input?: CreateSessionInput) {
+    const resolved = input ??
+      useGameStore.getState().createInput ?? { mode: "CLASSIC" as const };
+    store.setCreateInput(resolved);
+    startSessionMutation.mutate(resolved, {
       onSuccess: (session) => store.beginSession(session),
       onError: (error) => toast.error(error.message),
     });

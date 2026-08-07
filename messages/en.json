@@ -141,6 +141,9 @@
       "actualSpot": "Actual spot",
       "yourPin": "Your pin",
       "screenshotAlt": "Round {index} screenshot"
+    },
+    "tabs": {
+      "all": "All modes"
     }
   },
   "play": {
@@ -149,7 +152,14 @@
       "titleA": "Spot the map.",
       "titleB": "Nail the location.",
       "subtitle": "{rounds} rounds. A screenshot each time, no hints: identify the map, the floor and the exact position.",
-      "cta": "Start a match"
+      "cta": "Start a match",
+      "modeLabel": "Game mode",
+      "modeDescriptions": {
+        "CLASSIC": "Every map in the pool — spot it, then pin it.",
+        "MAP_TRAINING": "Drill one map of your choice."
+      },
+      "mapLabel": "Map",
+      "mapPlaceholder": "Pick a map"
     },
     "round": {
       "chip": "Round {index}/{total}",
@@ -397,5 +407,10 @@
     "errorsCount": "{count, plural, one {# error} other {# errors}}",
     "warnings": "{count, plural, one {# warning} other {# warnings}}: {list}",
     "networkError": "Network error — file not transferred"
+  },
+  "modes": {
+    "CLASSIC": "Classic",
+    "MAP_TRAINING": "Map Training",
+    "TIME_ATTACK": "Time Attack"
   }
 }

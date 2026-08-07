@@ -179,7 +179,7 @@ export function SummaryScreen({
           <Button
             className="flex-1"
             size="lg"
-            onClick={onNewGame}
+            onClick={() => onNewGame()}
             disabled={isRestarting}
           >
             {isRestarting ? (

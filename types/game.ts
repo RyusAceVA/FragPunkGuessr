@@ -15,7 +15,14 @@ export const DIFFICULTIES = ["EASY", "MEDIUM", "HARD", "IMPOSSIBLE"] as const;
 export const difficultySchema = z.enum(DIFFICULTIES);
 export type Difficulty = z.infer<typeof difficultySchema>;
 
-export const GAME_MODES = ["CLASSIC"] as const;
+/**
+ * Modes de jeu déclarés. Un mode déclaré ici peut exister en base et
+ * dans les statistiques ; il n'est JOUABLE que s'il est enregistré
+ * dans le registre des modes (features/game/modes/registry.ts).
+ * TIME_ATTACK est déclaré par anticipation (stats prêtes), pas encore
+ * implémenté.
+ */
+export const GAME_MODES = ["CLASSIC", "MAP_TRAINING", "TIME_ATTACK"] as const;
 export const gameModeSchema = z.enum(GAME_MODES);
 export type GameMode = z.infer<typeof gameModeSchema>;
 

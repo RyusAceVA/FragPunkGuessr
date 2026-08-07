@@ -93,6 +93,7 @@ export default async function SessionDetailPage({
   params: Promise<{ sessionId: string }>;
 }) {
   const t = await getTranslations("stats.detail");
+  const tModes = await getTranslations("modes");
   const format = await getFormatter();
   const session = await auth();
   if (!session?.user) redirect("/login");
@@ -117,6 +118,9 @@ export default async function SessionDetailPage({
           <h1 className="display text-4xl sm:text-5xl">
             {t("title1")} <span className="text-holo">{t("title2")}</span>
           </h1>
+          <span className="clip-slash inline-block bg-signal px-2.5 py-0.5 font-heading text-[11px] font-bold tracking-wider text-background uppercase">
+            {tModes(detail.mode)}
+          </span>
           {detail.completedAt && (
             <p className="text-sm text-muted-foreground">
               {format.dateTime(new Date(detail.completedAt), {

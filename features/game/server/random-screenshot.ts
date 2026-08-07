@@ -8,6 +8,8 @@ import { prisma } from "@/lib/prisma";
  */
 export interface PickRandomOptions {
   excludeIds?: string[];
+  /** Restreint le tirage à une seule map (Map Training) */
+  mapId?: string;
   seed?: number;
 }
 
@@ -40,6 +42,7 @@ export async function pickRandomScreenshots(
   const candidates = await prisma.screenshot.findMany({
     where: {
       ...PLAYABLE_WHERE,
+      ...(options.mapId ? { mapId: options.mapId } : {}),
       ...(options.excludeIds?.length
         ? { id: { notIn: options.excludeIds } }
         : {}),

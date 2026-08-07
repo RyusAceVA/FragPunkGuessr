@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { maxSessionScore, SCORE_CONFIG, scoreRound } from "@/lib/score";
 
-import { GAME_CONFIG } from "../config";
-import type { SubmitGuessInput } from "../schemas";
+import { getGameMode } from "../modes/registry";
+import type { GameModeOptions } from "../modes/types";
+import type { CreateSessionInput, SubmitGuessInput } from "../schemas";
 import type {
   GameSessionState,
   GuessResponse,
@@ -10,17 +11,10 @@ import type {
   SessionRound,
   SessionSummary,
 } from "../types";
-import { pickRandomScreenshots } from "./random-screenshot";
 
-/** Erreur métier portant un statut HTTP, interceptée par les routes API. */
-export class GameError extends Error {
-  constructor(
-    public readonly status: number,
-    message: string,
-  ) {
-    super(message);
-  }
-}
+import { GameError } from "./errors";
+
+export { GameError };
 
 function roundImageUrl(roundId: string): string {
   return `/api/game/round-image/${roundId}`;
@@ -55,28 +49,46 @@ function serializeSession(
 }
 
 /**
- * Crée une partie : tire N screenshots DISTINCTS toutes maps confondues
- * (aucun doublon possible dans une partie, quel que soit le pool) et
- * matérialise les manches en base. Le client ne reçoit que les ids de
- * manches et l'image de la première.
+ * SessionGenerator — crée une partie de N'IMPORTE QUEL mode jouable.
+ * Le cœur ne connaît aucun mode : il résout la définition via le
+ * registre (GameModeService), valide les options du joueur, délègue
+ * le tirage des screenshots au RoundGenerator du mode (toujours
+ * DISTINCTS — aucun doublon dans une partie) et matérialise les
+ * manches en base. Le client ne reçoit que les ids de manches et
+ * l'image de la première.
  *
  * `userId` (joueur connecté) rattache la partie à un profil pour les
  * statistiques ; null = partie anonyme, jamais comptée dans un profil.
  */
 export async function createSession(
-  userId: string | null = null,
+  userId: string | null,
+  input: CreateSessionInput,
 ): Promise<GameSessionState> {
-  const screenshotIds = await pickRandomScreenshots(
-    GAME_CONFIG.roundsPerSession,
+  const mode = getGameMode(input.mode);
+  const options: GameModeOptions = { mapId: input.mapId };
+  await mode.validateOptions(options);
+
+  const screenshotIds = await mode.rounds.pickScreenshots(
+    mode.config.roundsPerSession,
+    options,
   );
   if (screenshotIds.length === 0) {
     throw new GameError(409, "No playable screenshots — add content first");
   }
 
+  // Un JWT peut survivre à la suppression du compte (12 h) : un userId
+  // inconnu est traité comme une partie anonyme, jamais comme une erreur.
+  const owner = userId
+    ? await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true },
+      })
+    : null;
+
   const session = await prisma.gameSession.create({
     data: {
-      mode: "CLASSIC",
-      userId,
+      mode: mode.config.id,
+      userId: owner?.id ?? null,
       rounds: {
         create: screenshotIds.map((screenshotId, i) => ({
           screenshotId,

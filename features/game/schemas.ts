@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+import { gameModeSchema } from "@/types";
+
+/** Création de partie : un mode + ses options éventuelles. */
+export const createSessionSchema = z.object({
+  mode: gameModeSchema.default("CLASSIC"),
+  /** Map imposée (exigée par les modes requiresMap, ex. Map Training) */
+  mapId: z.string().min(1).optional(),
+});
+export type CreateSessionInput = z.infer<typeof createSessionSchema>;
+
 export const submitGuessSchema = z.object({
   roundId: z.string().min(1),
   floorId: z.string().min(1),

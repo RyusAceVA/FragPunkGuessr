@@ -5,6 +5,8 @@ import Link from "next/link";
 
 import { PageContainer } from "@/components/layout/page-container";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { GAME_MODES, type GameMode } from "@/types";
 import { auth } from "@/features/auth";
 import { GAME_CONFIG } from "@/features/game/config";
 import {
@@ -47,9 +49,21 @@ function SectionTitle({
 /**
  * Tableau de bord du joueur connecté. Toutes les données viennent du
  * StatisticsService (agrégations SQL) — aucun calcul côté client.
+ * ?mode=CLASSIC|MAP_TRAINING|… filtre toutes les statistiques par mode.
  */
-export default async function StatsPage() {
+export default async function StatsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ mode?: string }>;
+}) {
   const t = await getTranslations("stats");
+  const tModes = await getTranslations("modes");
+  const { mode: rawMode } = await searchParams;
+  const mode: GameMode | null = (GAME_MODES as readonly string[]).includes(
+    rawMode ?? "",
+  )
+    ? (rawMode as GameMode)
+    : null;
   const session = await auth();
 
   if (!session?.user) {
@@ -75,7 +89,7 @@ export default async function StatsPage() {
     );
   }
 
-  const stats = await getPlayerStatistics(session.user.id);
+  const stats = await getPlayerStatistics(session.user.id, mode);
   const hasRounds = stats.overview.roundsPlayed > 0;
 
   return (
@@ -86,6 +100,27 @@ export default async function StatsPage() {
           {t("subtitle")}
         </p>
       </div>
+
+      {/* Filtre par mode de jeu */}
+      <nav className="flex flex-wrap gap-1.5" aria-label={t("title")}>
+        {[null, ...GAME_MODES].map((tabMode) => {
+          const active = mode === tabMode;
+          return (
+            <Link
+              key={tabMode ?? "all"}
+              href={tabMode ? `/stats?mode=${tabMode}` : "/stats"}
+              className={cn(
+                "clip-slash px-3.5 py-1.5 font-heading text-xs font-bold tracking-wider uppercase transition-colors",
+                active
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground",
+              )}
+            >
+              {tabMode ? tModes(tabMode) : t("tabs.all")}
+            </Link>
+          );
+        })}
+      </nav>
 
       {!hasRounds ? (
         <div className="panel clip-notch mx-auto max-w-md space-y-4 p-8 text-center">

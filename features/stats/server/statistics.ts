@@ -1,6 +1,7 @@
 import { Prisma } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { SCORE_CONFIG } from "@/lib/score";
+import type { GameMode } from "@/types";
 
 import type {
   FloorStatsEntry,
@@ -38,10 +39,15 @@ import type {
  * ═══════════════════════════════════════════════════════════════════
  */
 
+/** Filtre de mode optionnel (null = tous les modes confondus). */
+const MODE_FILTER = (mode: GameMode | null) =>
+  mode ? Prisma.sql`AND g.mode = ${mode}` : Prisma.empty;
+
 /** Jointures des manches d'un joueur (vérité terrain + réponse). */
-const ROUNDS_FROM = (userId: string) => Prisma.sql`
+const ROUNDS_FROM = (userId: string, mode: GameMode | null) => Prisma.sql`
   FROM "Round" r
-  JOIN "GameSession" g ON g.id = r."sessionId" AND g."userId" = ${userId}
+  JOIN "GameSession" g ON g.id = r."sessionId"
+    AND g."userId" = ${userId} ${MODE_FILTER(mode)}
   JOIN "Screenshot" s ON s.id = r."screenshotId"
   JOIN "GameMap" m ON m.id = s."mapId"
   LEFT JOIN "Floor" gf ON gf.id = r."guessFloorId"
@@ -50,7 +56,10 @@ const ROUNDS_FROM = (userId: string) => Prisma.sql`
 /** Une manche est « jouée » quand sa réponse a été validée. */
 const PLAYED = Prisma.sql`r."guessFloorId" IS NOT NULL`;
 
-async function getOverview(userId: string): Promise<StatsOverview> {
+async function getOverview(
+  userId: string,
+  mode: GameMode | null,
+): Promise<StatsOverview> {
   const [sessions] = await prisma.$queryRaw<
     {
       games_played: number;
@@ -64,8 +73,8 @@ async function getOverview(userId: string): Promise<StatsOverview> {
       COUNT(*) FILTER (WHERE status = 'COMPLETED')::int AS games_completed,
       COALESCE(MAX(score) FILTER (WHERE status = 'COMPLETED'), 0)::int AS best_score,
       COALESCE(AVG(score) FILTER (WHERE status = 'COMPLETED'), 0)::float AS average_score
-    FROM "GameSession"
-    WHERE "userId" = ${userId}
+    FROM "GameSession" g
+    WHERE g."userId" = ${userId} ${MODE_FILTER(mode)}
   `);
 
   const [rounds] = await prisma.$queryRaw<
@@ -91,7 +100,7 @@ async function getOverview(userId: string): Promise<StatsOverview> {
       )::int AS wrong_floors,
       AVG(r.distance)::float AS avg_distance,
       AVG(r."timeMs")::float AS avg_time_ms
-    ${ROUNDS_FROM(userId)}
+    ${ROUNDS_FROM(userId, mode)}
     WHERE ${PLAYED}
   `);
 
@@ -119,7 +128,10 @@ async function getOverview(userId: string): Promise<StatsOverview> {
 }
 
 /** « Sur quelle map suis-je mauvais ? » — triées de la pire à la meilleure. */
-async function getMapStats(userId: string): Promise<MapStatsEntry[]> {
+async function getMapStats(
+  userId: string,
+  mode: GameMode | null,
+): Promise<MapStatsEntry[]> {
   const rows = await prisma.$queryRaw<
     {
       map_id: string;
@@ -141,7 +153,7 @@ async function getMapStats(userId: string): Promise<MapStatsEntry[]> {
       MAX(COALESCE(r.score, 0))::int AS best_score,
       AVG(r.distance)::float AS avg_distance,
       COUNT(*) FILTER (WHERE r."guessFloorId" = s."floorId")::int AS won
-    ${ROUNDS_FROM(userId)}
+    ${ROUNDS_FROM(userId, mode)}
     WHERE ${PLAYED}
     GROUP BY m.id, m.name
     ORDER BY AVG(r.score) ASC
@@ -162,7 +174,10 @@ async function getMapStats(userId: string): Promise<MapStatsEntry[]> {
 }
 
 /** « Est-ce que je me trompe souvent de niveau ? » — par étage réel. */
-async function getFloorStats(userId: string): Promise<FloorStatsEntry[]> {
+async function getFloorStats(
+  userId: string,
+  mode: GameMode | null,
+): Promise<FloorStatsEntry[]> {
   const rows = await prisma.$queryRaw<
     {
       floor_id: string;
@@ -188,7 +203,7 @@ async function getFloorStats(userId: string): Promise<FloorStatsEntry[]> {
       COUNT(*) FILTER (
         WHERE gf."mapId" = s."mapId" AND r."guessFloorId" <> s."floorId"
       )::int AS wrong_floor
-    ${ROUNDS_FROM(userId)}
+    ${ROUNDS_FROM(userId, mode)}
     JOIN "Floor" f ON f.id = s."floorId"
     WHERE ${PLAYED}
     GROUP BY f.id, m.name, f.name, f.level
@@ -211,7 +226,10 @@ async function getFloorStats(userId: string): Promise<FloorStatsEntry[]> {
 }
 
 /** Les 30 dernières parties terminées, en ordre chronologique. */
-async function getProgression(userId: string): Promise<ProgressionPoint[]> {
+async function getProgression(
+  userId: string,
+  mode: GameMode | null,
+): Promise<ProgressionPoint[]> {
   const rows = await prisma.$queryRaw<
     {
       id: string;
@@ -223,7 +241,7 @@ async function getProgression(userId: string): Promise<ProgressionPoint[]> {
     SELECT g.id, g."completedAt" AS completed_at, g.score,
       (SELECT COUNT(*)::int FROM "Round" r WHERE r."sessionId" = g.id) AS rounds
     FROM "GameSession" g
-    WHERE g."userId" = ${userId} AND g.status = 'COMPLETED'
+    WHERE g."userId" = ${userId} AND g.status = 'COMPLETED' ${MODE_FILTER(mode)}
     ORDER BY g."completedAt" DESC
     LIMIT 30
   `);
@@ -239,26 +257,30 @@ async function getProgression(userId: string): Promise<ProgressionPoint[]> {
 }
 
 /** Les 20 dernières parties terminées (historique cliquable). */
-async function getHistory(userId: string): Promise<HistoryEntry[]> {
+async function getHistory(
+  userId: string,
+  mode: GameMode | null,
+): Promise<HistoryEntry[]> {
   const rows = await prisma.$queryRaw<
     {
       id: string;
       completed_at: Date;
       started_at: Date;
       score: number;
+      mode: string;
       rounds: number;
       map_names: string[];
     }[]
   >(Prisma.sql`
     SELECT g.id, g."completedAt" AS completed_at, g."startedAt" AS started_at,
-      g.score,
+      g.score, g.mode,
       COUNT(r.id)::int AS rounds,
       ARRAY_AGG(DISTINCT m.name ORDER BY m.name) AS map_names
     FROM "GameSession" g
     JOIN "Round" r ON r."sessionId" = g.id
     JOIN "Screenshot" s ON s.id = r."screenshotId"
     JOIN "GameMap" m ON m.id = s."mapId"
-    WHERE g."userId" = ${userId} AND g.status = 'COMPLETED'
+    WHERE g."userId" = ${userId} AND g.status = 'COMPLETED' ${MODE_FILTER(mode)}
     GROUP BY g.id
     ORDER BY g."completedAt" DESC
     LIMIT 20
@@ -270,6 +292,7 @@ async function getHistory(userId: string): Promise<HistoryEntry[]> {
       sessionId: row.id,
       completedAt: row.completed_at.toISOString(),
       score: row.score,
+      mode: row.mode as GameMode,
       maxScore,
       accuracyPct: maxScore > 0 ? Math.round((row.score / maxScore) * 100) : 0,
       durationMs: row.completed_at.getTime() - row.started_at.getTime(),
@@ -290,7 +313,7 @@ async function getHeatmapFloors(userId: string): Promise<HeatmapFloor[]> {
   >(Prisma.sql`
     SELECT f.id AS floor_id, m.name AS map_name, f.name AS floor_name,
       COUNT(*)::int AS rounds
-    ${ROUNDS_FROM(userId)}
+    ${ROUNDS_FROM(userId, null)}
     JOIN "Floor" f ON f.id = s."floorId"
     WHERE ${PLAYED}
     GROUP BY f.id, m.name, f.name, f.level
@@ -312,14 +335,15 @@ async function getHeatmapFloors(userId: string): Promise<HeatmapFloor[]> {
  */
 export async function getPlayerStatistics(
   userId: string,
+  mode: GameMode | null = null,
 ): Promise<PlayerStatistics> {
   const [overview, maps, floors, progression, history, heatmapFloors] =
     await Promise.all([
-      getOverview(userId),
-      getMapStats(userId),
-      getFloorStats(userId),
-      getProgression(userId),
-      getHistory(userId),
+      getOverview(userId, mode),
+      getMapStats(userId, mode),
+      getFloorStats(userId, mode),
+      getProgression(userId, mode),
+      getHistory(userId, mode),
       getHeatmapFloors(userId),
     ]);
 
@@ -354,7 +378,7 @@ export async function getHeatmap(
     { x: number; y: number; score: number }[]
   >(Prisma.sql`
     SELECT s."pixelX" AS x, s."pixelY" AS y, r.score
-    ${ROUNDS_FROM(userId)}
+    ${ROUNDS_FROM(userId, null)}
     WHERE ${PLAYED} AND s."floorId" = ${floorId}
       AND s."pixelX" IS NOT NULL AND s."pixelY" IS NOT NULL
   `);
@@ -443,6 +467,7 @@ export async function getSessionDetail(
   return {
     sessionId: session.id,
     completedAt: session.completedAt?.toISOString() ?? null,
+    mode: session.mode,
     score: session.score,
     maxScore,
     accuracyPct:

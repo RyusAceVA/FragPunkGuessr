@@ -1,5 +1,6 @@
 import { create } from "zustand";
 
+import type { CreateSessionInput } from "./schemas";
 import type { GameSessionState, RoundResult, SessionRound } from "./types";
 
 export type GamePhase = "idle" | "round" | "result" | "summary";
@@ -18,6 +19,9 @@ interface GameState {
 
   /** Début de la manche affichée (image visible) — pour le temps de réponse */
   roundStartedAt: number | null;
+  /** Mode + options de la partie en cours — réutilisés par « Rejouer » */
+  createInput: CreateSessionInput | null;
+  setCreateInput: (input: CreateSessionInput) => void;
   /** Panneau latéral de guess ouvert */
   panelOpen: boolean;
   /** Étape 1 du guess : map choisie par le joueur (null = liste des maps) */
@@ -53,7 +57,10 @@ export const useGameStore = create<GameState>()((set) => ({
   currentRound: null,
   result: null,
   roundStartedAt: null,
+  createInput: null,
   ...EMPTY_GUESS,
+
+  setCreateInput: (input) => set({ createInput: input }),
 
   beginSession: (session) =>
     set({

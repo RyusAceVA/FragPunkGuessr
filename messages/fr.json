@@ -141,6 +141,9 @@
       "actualSpot": "Vraie position",
       "yourPin": "Ton pin",
       "screenshotAlt": "Screenshot de la manche {index}"
+    },
+    "tabs": {
+      "all": "Tous les modes"
     }
   },
   "play": {
@@ -149,7 +152,14 @@
       "titleA": "Reconnais la map.",
       "titleB": "Retrouve l'endroit.",
       "subtitle": "{rounds} manches. Un screenshot à chaque fois, sans indice : identifie la map, l'étage et la position exacte.",
-      "cta": "Lancer une partie"
+      "cta": "Lancer une partie",
+      "modeLabel": "Mode de jeu",
+      "modeDescriptions": {
+        "CLASSIC": "Toutes les maps — reconnais, puis place ton pin.",
+        "MAP_TRAINING": "Entraîne-toi sur une map de ton choix."
+      },
+      "mapLabel": "Map",
+      "mapPlaceholder": "Choisis une map"
     },
     "round": {
       "chip": "Manche {index}/{total}",
@@ -397,5 +407,10 @@
     "errorsCount": "{count, plural, one {# erreur} other {# erreurs}}",
     "warnings": "{count, plural, one {# avertissement} other {# avertissements}} : {list}",
     "networkError": "Erreur réseau — fichier non transféré"
+  },
+  "modes": {
+    "CLASSIC": "Classique",
+    "MAP_TRAINING": "Entraînement map",
+    "TIME_ATTACK": "Contre-la-montre"
   }
 }
