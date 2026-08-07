@@ -16,7 +16,9 @@
     "logout": "Se déconnecter",
     "logoutTooltip": "Se déconnecter ({email})",
     "openMenu": "Ouvrir le menu",
-    "closeMenu": "Fermer le menu"
+    "closeMenu": "Fermer le menu",
+    "profile": "Profil",
+    "signIn": "Connexion"
   },
   "language": {
     "label": "Langue"
@@ -225,14 +227,17 @@
   "auth": {
     "loginMeta": "Connexion",
     "title": "Connexion",
-    "subtitle": "Espace réservé à l'administration.",
+    "subtitle": "Connecte-toi pour suivre tes stats et grimper.",
     "email": "Email",
     "password": "Mot de passe",
     "submit": "Connexion",
     "sessionNote": "Session sécurisée — cookies httpOnly, 12 h",
     "errors": {
       "invalid": "Email ou mot de passe invalide.",
-      "incorrect": "Email ou mot de passe incorrect."
+      "incorrect": "Email ou mot de passe incorrect.",
+      "passwordMismatch": "Les mots de passe ne correspondent pas.",
+      "usernameTaken": "Ce pseudo est déjà pris.",
+      "emailTaken": "Un compte existe déjà avec cet email."
     },
     "forbidden": {
       "meta": "Accès refusé",
@@ -241,7 +246,21 @@
       "description": "Ton compte n'a pas les droits d'administration. Si tu penses que c'est une erreur, contacte l'administrateur du site.",
       "backHome": "Retour à l'accueil",
       "switchAccount": "Changer de compte"
-    }
+    },
+    "or": "ou",
+    "googleCta": "Continuer avec Google",
+    "noAccount": "Pas encore de compte ?",
+    "signupLink": "Crée-le",
+    "haveAccount": "Déjà un compte ?",
+    "loginLink": "Se connecter",
+    "signupMeta": "Inscription",
+    "signupTitle": "Rejoins la chasse",
+    "signupSubtitle": "Un compte — tes parties, tes stats, ton profil.",
+    "signupCta": "Créer mon compte",
+    "username": "Pseudo",
+    "usernameHint": "3 à 20 caractères : lettres, chiffres, - et _.",
+    "confirmPassword": "Confirme le mot de passe",
+    "passwordHint": "8 caractères minimum."
   },
   "difficulty": {
     "EASY": "Facile",
@@ -413,5 +432,21 @@
     "CLASSIC": "Classique",
     "MAP_TRAINING": "Entraînement map",
     "TIME_ATTACK": "Contre-la-montre"
+  },
+  "profile": {
+    "meta": "Profil",
+    "title": "Profil",
+    "subtitle": "Ce que les autres verront de toi sur FragPunk Guessr.",
+    "avatar": "Avatar",
+    "noAvatar": "Sans avatar",
+    "avatarUnavailable": "Catalogue d'avatars indisponible pour le moment.",
+    "displayName": "Nom d'affichage",
+    "country": "Pays",
+    "countryPlaceholder": "France, Japon…",
+    "bio": "Bio",
+    "bioPlaceholder": "Quelques mots sur ton game sense…",
+    "memberSince": "Membre depuis le {date}",
+    "save": "Enregistrer",
+    "saved": "Profil mis à jour."
   }
 }

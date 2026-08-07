@@ -72,6 +72,17 @@ de comptes (ex. l'accès de ton client), rôles (`ADMIN` / `USER`,
 suppression. Garde-fous intégrés : impossible de supprimer / rétrograder /
 désactiver le **dernier administrateur actif** ou son **propre compte**.
 
+### Comptes joueurs (grand public)
+
+Les joueurs créent leur compte sur **`/signup`** (pseudo + email + mot de
+passe, rôle `USER`) ou via **Google** (bouton visible seulement si
+`AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET` sont renseignés — voir
+`.env.example` pour la redirect URI). Premier login Google : compte créé
+automatiquement ; si l'email existe déjà, le compte Google y est **lié**
+(table `Account` — prête pour Discord/Steam). Chaque joueur édite son
+profil sur **`/profile`** : nom d'affichage, avatar (portraits de
+lancers de l'API fragpunk-assets), pays, bio.
+
 ## Importer des maps (Asset Manager)
 
 **Administration → Assets** : créer une map (la structure de dossiers est

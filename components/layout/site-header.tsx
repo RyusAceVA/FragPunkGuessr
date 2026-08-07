@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Crosshair, LogOut, Menu, X } from "lucide-react";
+import { Crosshair, LogIn, LogOut, Menu, UserRound, X } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -95,24 +95,51 @@ export function SiteHeader() {
           <Button size="sm" nativeButton={false} render={<Link href="/play" />}>
             {t("launch")}
           </Button>
-          {session?.user && (
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    onClick={() => signOut({ callbackUrl: "/" })}
-                    aria-label={t("logout")}
-                  >
-                    <LogOut />
-                  </Button>
-                }
-              />
-              <TooltipContent>
-                {t("logoutTooltip", { email: session.user.email ?? "" })}
-              </TooltipContent>
-            </Tooltip>
+          {session?.user ? (
+            <>
+              {/* Chip profil : username → page profil */}
+              <Link
+                href="/profile"
+                className={cn(
+                  "clip-slash flex items-center gap-1.5 px-2.5 py-1.5 font-heading text-xs font-bold tracking-wide uppercase transition-colors",
+                  pathname.startsWith("/profile")
+                    ? "bg-primary/20 text-primary"
+                    : "bg-muted text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <UserRound className="size-3.5" aria-hidden />
+                <span className="max-w-28 truncate">
+                  {session.user.name ?? t("profile")}
+                </span>
+              </Link>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => signOut({ callbackUrl: "/" })}
+                      aria-label={t("logout")}
+                    >
+                      <LogOut />
+                    </Button>
+                  }
+                />
+                <TooltipContent>
+                  {t("logoutTooltip", { email: session.user.email ?? "" })}
+                </TooltipContent>
+              </Tooltip>
+            </>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/login" />}
+            >
+              <LogIn data-icon="inline-start" />
+              {t("signIn")}
+            </Button>
           )}
         </div>
 
@@ -163,16 +190,39 @@ export function SiteHeader() {
                   </Link>
                 </li>
               ))}
-              {session?.user && (
+              {session?.user ? (
+                <>
+                  <li>
+                    <Link
+                      href="/profile"
+                      onClick={closeMobileNav}
+                      className="flex w-full items-center gap-2 px-3 py-2.5 font-heading text-sm font-semibold tracking-wide text-muted-foreground uppercase transition-colors hover:bg-accent hover:text-foreground"
+                    >
+                      <UserRound className="size-4" aria-hidden />
+                      {t("profile")}
+                    </Link>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => signOut({ callbackUrl: "/" })}
+                      className="flex w-full items-center gap-2 px-3 py-2.5 font-heading text-sm font-semibold tracking-wide text-muted-foreground uppercase transition-colors hover:bg-accent hover:text-foreground"
+                    >
+                      <LogOut className="size-4" aria-hidden />
+                      {t("logout")}
+                    </button>
+                  </li>
+                </>
+              ) : (
                 <li>
-                  <button
-                    type="button"
-                    onClick={() => signOut({ callbackUrl: "/" })}
+                  <Link
+                    href="/login"
+                    onClick={closeMobileNav}
                     className="flex w-full items-center gap-2 px-3 py-2.5 font-heading text-sm font-semibold tracking-wide text-muted-foreground uppercase transition-colors hover:bg-accent hover:text-foreground"
                   >
-                    <LogOut className="size-4" aria-hidden />
-                    {t("logout")}
-                  </button>
+                    <LogIn className="size-4" aria-hidden />
+                    {t("signIn")}
+                  </Link>
                 </li>
               )}
             </ul>

@@ -1,4 +1,4 @@
-import { Crosshair } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
@@ -6,27 +6,17 @@ import { redirect } from "next/navigation";
 
 import { auth, isGoogleEnabled } from "@/features/auth";
 import { GoogleButton } from "@/features/auth/components/google-button";
-import { LoginForm } from "@/features/auth/components/login-form";
+import { SignupForm } from "@/features/auth/components/signup-form";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("auth");
-  return { title: t("loginMeta") };
+  return { title: t("signupMeta") };
 }
 
-interface LoginPageProps {
-  searchParams: Promise<{ callbackUrl?: string }>;
-}
-
-export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const { callbackUrl } = await searchParams;
-  const target =
-    callbackUrl?.startsWith("/") && !callbackUrl.startsWith("//")
-      ? callbackUrl
-      : "/";
-
-  // Déjà connecté → inutile de montrer le formulaire
+export default async function SignupPage() {
+  // Déjà connecté → direction l'accueil
   const session = await auth();
-  if (session?.user) redirect(target);
+  if (session?.user) redirect("/");
 
   const t = await getTranslations("auth");
 
@@ -34,14 +24,14 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     <div className="bg-grid mask-fade-edges relative flex min-h-[calc(100dvh-4rem)] items-center justify-center px-4 py-8">
       <div className="panel clip-notch hard-shadow relative w-full max-w-sm space-y-5 p-6 sm:p-8">
         <div className="space-y-1.5 text-center">
-          <span className="clip-slash mx-auto flex h-10 w-11 items-center justify-center bg-primary text-primary-foreground">
-            <Crosshair className="size-5" aria-hidden />
+          <span className="clip-slash mx-auto flex h-10 w-11 items-center justify-center bg-signal text-background">
+            <UserPlus className="size-5" aria-hidden />
           </span>
-          <h1 className="display pt-2 text-3xl">{t("title")}</h1>
-          <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
+          <h1 className="display pt-2 text-3xl">{t("signupTitle")}</h1>
+          <p className="text-sm text-muted-foreground">{t("signupSubtitle")}</p>
         </div>
 
-        <LoginForm callbackUrl={target} />
+        <SignupForm />
 
         {isGoogleEnabled && (
           <>
@@ -52,17 +42,17 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               </span>
               <span className="slash-divider flex-1" />
             </div>
-            <GoogleButton callbackUrl={target} />
+            <GoogleButton callbackUrl="/" />
           </>
         )}
 
         <p className="text-center text-sm text-muted-foreground">
-          {t("noAccount")}{" "}
+          {t("haveAccount")}{" "}
           <Link
-            href="/signup"
+            href="/login"
             className="font-semibold text-primary hover:underline"
           >
-            {t("signupLink")}
+            {t("loginLink")}
           </Link>
         </p>
       </div>

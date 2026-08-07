@@ -29,18 +29,42 @@ model User {
   id           String   @id @default(uuid(7))
   email        String   @unique
   username     String   @unique
+  // Null pour les comptes purement OAuth (Google…) — connexion sans mot de passe
   passwordHash String?
   // "USER" | "ADMIN" — extensible ("MODERATOR"…) via types/game.ts (UserRole)
   role         String   @default("USER")
   // Compte désactivé = connexion refusée (les données sont conservées)
   isActive     Boolean  @default(true)
+  // — Profil public —
+  displayName  String?
   avatarUrl    String?
+  country      String?
+  bio          String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   sessions     GameSession[]
   stats        UserStats?
   achievements UserAchievement[]
+  accounts     Account[]
+}
+
+// Liaison d'un compte externe (OAuth) à un utilisateur.
+// Générique par construction : "google" aujourd'hui, "discord"/"steam"
+// demain — un provider = une ligne, un utilisateur peut en lier plusieurs.
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  // Identifiant du provider ("google", "discord", "steam"…)
+  provider          String
+  // Identifiant STABLE de l'utilisateur chez le provider (sub OIDC)
+  providerAccountId String
+  createdAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 // ---------------------------------------------------------------------------

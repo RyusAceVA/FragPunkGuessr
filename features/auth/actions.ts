@@ -3,14 +3,15 @@
 import { AuthError } from "next-auth";
 
 import { signIn, signOut } from "./auth";
-import { loginSchema } from "./schemas";
+import { loginSchema, registerSchema } from "./schemas";
+import { registerUser, type RegisterErrorCode } from "./server/register";
 
 /** N'autorise que des chemins internes — jamais de redirection externe. */
 function safeCallbackUrl(raw: unknown): string {
   if (typeof raw === "string" && raw.startsWith("/") && !raw.startsWith("//")) {
     return raw;
   }
-  return "/admin";
+  return "/";
 }
 
 /** Codes d'erreur traduits côté client (messages/<locale>.json). */
@@ -52,4 +53,43 @@ export async function authenticate(
 /** Server Action de déconnexion. */
 export async function logout(): Promise<void> {
   await signOut({ redirectTo: "/" });
+}
+
+/**
+ * Server Action d'inscription : crée le compte USER puis connecte
+ * immédiatement (Credentials). Retourne un code d'erreur i18n sinon.
+ */
+export async function registerAction(
+  _previousState: RegisterErrorCode | undefined,
+  formData: FormData,
+): Promise<RegisterErrorCode | undefined> {
+  const parsed = registerSchema.safeParse({
+    username: formData.get("username"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
+  });
+  if (!parsed.success) {
+    const mismatch = parsed.error.issues.some(
+      (issue) => issue.path[0] === "confirmPassword",
+    );
+    return mismatch ? "passwordMismatch" : "invalid";
+  }
+
+  const errorCode = await registerUser(parsed.data);
+  if (errorCode) return errorCode;
+
+  await signIn("credentials", {
+    email: parsed.data.email,
+    password: parsed.data.password,
+    redirectTo: "/",
+  });
+  return undefined;
+}
+
+/** Server Action : connexion via Google (redirige vers le consentement). */
+export async function signInWithGoogle(formData: FormData): Promise<void> {
+  await signIn("google", {
+    redirectTo: safeCallbackUrl(formData.get("callbackUrl")),
+  });
 }

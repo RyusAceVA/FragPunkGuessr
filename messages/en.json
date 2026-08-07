@@ -16,7 +16,9 @@
     "logout": "Sign out",
     "logoutTooltip": "Sign out ({email})",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "profile": "Profile",
+    "signIn": "Sign in"
   },
   "language": {
     "label": "Language"
@@ -225,14 +227,17 @@
   "auth": {
     "loginMeta": "Sign in",
     "title": "Sign in",
-    "subtitle": "Staff-only area.",
+    "subtitle": "Sign in to track your stats and climb the boards.",
     "email": "Email",
     "password": "Password",
     "submit": "Sign in",
     "sessionNote": "Secure session — httpOnly cookies, 12 h",
     "errors": {
       "invalid": "Invalid email or password.",
-      "incorrect": "Incorrect email or password."
+      "incorrect": "Incorrect email or password.",
+      "passwordMismatch": "Passwords do not match.",
+      "usernameTaken": "This username is already taken.",
+      "emailTaken": "An account already exists with this email."
     },
     "forbidden": {
       "meta": "Access denied",
@@ -241,7 +246,21 @@
       "description": "Your account doesn't have admin rights. If you think this is a mistake, contact the site administrator.",
       "backHome": "Back to home",
       "switchAccount": "Switch account"
-    }
+    },
+    "or": "or",
+    "googleCta": "Continue with Google",
+    "noAccount": "No account yet?",
+    "signupLink": "Create one",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Sign in",
+    "signupMeta": "Sign up",
+    "signupTitle": "Join the hunt",
+    "signupSubtitle": "One account — your matches, stats and profile.",
+    "signupCta": "Create my account",
+    "username": "Username",
+    "usernameHint": "3–20 characters: letters, digits, - and _.",
+    "confirmPassword": "Confirm password",
+    "passwordHint": "At least 8 characters."
   },
   "difficulty": {
     "EASY": "Easy",
@@ -413,5 +432,21 @@
     "CLASSIC": "Classic",
     "MAP_TRAINING": "Map Training",
     "TIME_ATTACK": "Time Attack"
+  },
+  "profile": {
+    "meta": "Profile",
+    "title": "Profile",
+    "subtitle": "How you appear across FragPunk Guessr.",
+    "avatar": "Avatar",
+    "noAvatar": "No avatar",
+    "avatarUnavailable": "Avatar catalog unavailable right now.",
+    "displayName": "Display name",
+    "country": "Country",
+    "countryPlaceholder": "France, Japan…",
+    "bio": "Bio",
+    "bioPlaceholder": "A few words about your game sense…",
+    "memberSince": "Member since {date}",
+    "save": "Save changes",
+    "saved": "Profile updated."
   }
 }
