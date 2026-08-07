@@ -2,8 +2,10 @@ import type { GameMode } from "@/types";
 
 import { GameError } from "../server/errors";
 import { classicMode } from "./classic";
+import { dailyMode } from "./daily";
 import { mapTrainingMode } from "./map-training";
-import type { GameModeDefinition } from "./types";
+import { timeAttackMode } from "./time-attack";
+import type { GameModeConfig, GameModeDefinition } from "./types";
 
 /**
  * GameModeService — le registre des modes JOUABLES.
@@ -20,6 +22,8 @@ import type { GameModeDefinition } from "./types";
 const PLAYABLE_MODES: Partial<Record<GameMode, GameModeDefinition>> = {
   CLASSIC: classicMode,
   MAP_TRAINING: mapTrainingMode,
+  TIME_ATTACK: timeAttackMode,
+  DAILY: dailyMode,
 };
 
 /** Définition d'un mode jouable — 400 si le mode n'est pas ouvert. */
@@ -34,4 +38,13 @@ export function getGameMode(id: GameMode): GameModeDefinition {
 /** Modes proposés au joueur (écran de démarrage). */
 export function listGameModes(): GameModeDefinition[] {
   return Object.values(PLAYABLE_MODES);
+}
+
+/**
+ * Config d'un mode SANS lever d'erreur (sérialisation d'une session
+ * existante dont le mode aurait été retiré du registre) — null si
+ * inconnu.
+ */
+export function getGameModeConfig(mode: string): GameModeConfig | null {
+  return PLAYABLE_MODES[mode as GameMode]?.config ?? null;
 }

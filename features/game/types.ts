@@ -34,10 +34,18 @@ export interface SessionRound {
 /** État d'une partie (GameSession côté client). */
 export interface GameSessionState {
   id: string;
+  /** Mode de jeu de la partie (CLASSIC, TIME_ATTACK…) */
+  mode: string;
   roundCount: number;
   status: "IN_PROGRESS" | "COMPLETED";
   /** Prochaine manche à jouer (null si la partie est terminée) */
   currentRound: SessionRound | null;
+  /**
+   * Limite de temps par manche en ms, annoncée par la CONFIG du mode
+   * (null = aucune). Le gameplay applique cette valeur sans jamais la
+   * connaître en dur.
+   */
+  timeLimitMsPerRound: number | null;
 }
 
 /** Position réelle révélée après validation (plan compris, pour l'affichage). */
@@ -58,6 +66,8 @@ export interface RoundResult {
   roundCount: number;
   mapCorrect: boolean;
   floorCorrect: boolean;
+  /** Manche perdue par temps écoulé (modes chronométrés) */
+  timedOut: boolean;
   /** Distance en pixels — null si mauvaise map ou mauvais étage */
   distance: number | null;
   /** Score de la manche (0..maxPerRound) — calculé par lib/score.ts */

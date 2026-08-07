@@ -19,7 +19,9 @@
     "closeMenu": "Close menu",
     "profile": "Profile",
     "signIn": "Sign in",
-    "userMenu": "User menu"
+    "userMenu": "User menu",
+    "daily": "Daily",
+    "leaderboards": "Ranks"
   },
   "language": {
     "label": "Language"
@@ -159,7 +161,8 @@
       "modeLabel": "Game mode",
       "modeDescriptions": {
         "CLASSIC": "Every map in the pool — spot it, then pin it.",
-        "MAP_TRAINING": "Drill one map of your choice."
+        "MAP_TRAINING": "Drill one map of your choice.",
+        "TIME_ATTACK": "Classic rules — 30 seconds per round."
       },
       "mapLabel": "Map",
       "mapPlaceholder": "Pick a map"
@@ -204,7 +207,9 @@
       "recap": "See the recap",
       "roundScore": "Round score",
       "totalScore": "Total",
-      "roundProgress": "Round {index} of {total}"
+      "roundProgress": "Round {index} of {total}",
+      "timesUp": "Time's up",
+      "timesUpDetail": "The clock beat you — the map was {name}."
     },
     "summary": {
       "title1": "Match",
@@ -432,7 +437,8 @@
   "modes": {
     "CLASSIC": "Classic",
     "MAP_TRAINING": "Map Training",
-    "TIME_ATTACK": "Time Attack"
+    "TIME_ATTACK": "Time Attack",
+    "DAILY": "Daily Challenge"
   },
   "profile": {
     "meta": "Profile",
@@ -449,5 +455,37 @@
     "memberSince": "Member since {date}",
     "save": "Save changes",
     "saved": "Profile updated."
+  },
+  "daily": {
+    "meta": "Daily Challenge",
+    "title1": "Daily",
+    "title2": "Challenge",
+    "subtitle": "{rounds, plural, one {# round} other {# rounds}} — the same screenshots for everyone, one attempt per day.",
+    "rules": "Everyone faces the same spots, in the same order. One attempt — starting the challenge uses it, finished or not.",
+    "playCta": "Play today's challenge",
+    "signInPrompt": "The daily challenge is tied to your account: one attempt per player, every day at midnight UTC.",
+    "signInCta": "Sign in to play",
+    "nextIn": "Next challenge in",
+    "yourResult": "Your result today",
+    "attemptUsed": "Attempt used — unfinished match",
+    "todayRank": "Rank #{rank} today",
+    "review": "Review your match",
+    "todayBoard": "Today's top 10"
+  },
+  "leaderboard": {
+    "meta": "Leaderboards",
+    "title1": "Leader",
+    "title2": "boards",
+    "subtitle": "Best completed match per player. Sign in to claim your spot.",
+    "periods": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "alltime": "All time"
+    },
+    "empty": "No completed match on this period yet — be the first.",
+    "you": "(you)",
+    "yourRank": "Your rank",
+    "games": "{count, plural, one {# match} other {# matches}}"
   }
 }

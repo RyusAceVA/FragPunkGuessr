@@ -116,6 +116,16 @@ function ResultMap({ result }: { result: RoundResult }) {
 function Verdict({ result }: { result: RoundResult }) {
   const t = useTranslations("play.result");
 
+  if (result.timedOut) {
+    return (
+      <div className="panel clip-notch space-y-1 border-destructive/40 p-5 text-center">
+        <p className="display text-3xl text-destructive">{t("timesUp")}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("timesUpDetail", { name: result.actual.mapName })}
+        </p>
+      </div>
+    );
+  }
   if (!result.mapCorrect) {
     return (
       <div className="panel clip-notch space-y-1 border-destructive/40 p-5 text-center">

@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { maxSessionScore, SCORE_CONFIG, scoreRound } from "@/lib/score";
 
-import { getGameMode } from "../modes/registry";
+import { getGameMode, getGameModeConfig } from "../modes/registry";
 import type { GameModeOptions } from "../modes/types";
 import type { CreateSessionInput, SubmitGuessInput } from "../schemas";
 import type {
@@ -24,15 +24,22 @@ interface RoundLite {
   id: string;
   index: number;
   guessFloorId: string | null;
+  timedOut: boolean;
+}
+
+/** Une manche est jouée si elle a une réponse OU si son temps a expiré. */
+function isPlayed(round: RoundLite): boolean {
+  return round.guessFloorId !== null || round.timedOut;
 }
 
 function serializeSession(
   sessionId: string,
+  mode: string,
   status: string,
   rounds: RoundLite[],
 ): GameSessionState {
   const ordered = [...rounds].sort((a, b) => a.index - b.index);
-  const current = ordered.find((r) => r.guessFloorId === null) ?? null;
+  const current = ordered.find((r) => !isPlayed(r)) ?? null;
   const currentRound: SessionRound | null = current
     ? {
         id: current.id,
@@ -42,9 +49,13 @@ function serializeSession(
     : null;
   return {
     id: sessionId,
+    mode,
     roundCount: ordered.length,
     status: status === "COMPLETED" ? "COMPLETED" : "IN_PROGRESS",
     currentRound,
+    // La limite de temps vient de la CONFIG du mode — le gameplay ne
+    // connaît jamais la durée, il applique ce que le DTO annonce.
+    timeLimitMsPerRound: getGameModeConfig(mode)?.timeLimitMsPerRound ?? null,
   };
 }
 
@@ -66,7 +77,7 @@ export async function createSession(
 ): Promise<GameSessionState> {
   const mode = getGameMode(input.mode);
   const options: GameModeOptions = { mapId: input.mapId };
-  await mode.validateOptions(options);
+  await mode.validateOptions(options, { userId });
 
   const screenshotIds = await mode.rounds.pickScreenshots(
     mode.config.roundsPerSession,
@@ -99,7 +110,12 @@ export async function createSession(
     include: { rounds: true },
   });
 
-  return serializeSession(session.id, session.status, session.rounds);
+  return serializeSession(
+    session.id,
+    session.mode,
+    session.status,
+    session.rounds,
+  );
 }
 
 /**
@@ -119,7 +135,9 @@ export async function submitGuess(
     throw new GameError(409, "This match is already over");
   }
 
-  const current = session.rounds.find((r) => r.guessFloorId === null);
+  const current = session.rounds.find(
+    (r) => r.guessFloorId === null && !r.timedOut,
+  );
   if (!current || current.id !== input.roundId) {
     throw new GameError(409, "This round is not the current round");
   }
@@ -136,22 +154,61 @@ export async function submitGuess(
     throw new GameError(409, "Corrupted round — the screenshot was moved");
   }
 
-  const guessFloor = await prisma.floor.findUnique({
-    where: { id: input.floorId },
-    include: { map: true },
-  });
-  if (!guessFloor) throw new GameError(400, "Unknown floor");
+  // Temps de réponse client, clampé à 30 min
+  const timeMs =
+    input.timeMs !== undefined ? Math.min(input.timeMs, 30 * 60_000) : null;
 
-  const mapCorrect = guessFloor.mapId === screenshot.mapId;
-  const floorCorrect = mapCorrect && guessFloor.id === screenshot.floorId;
-  const distance = floorCorrect
-    ? Math.round(
-        Math.hypot(
-          screenshot.pixelX - input.pixelX,
-          screenshot.pixelY - input.pixelY,
-        ),
-      )
-    : null;
+  /*
+   * Modes chronométrés : la manche expire (flag client, ou garde
+   * serveur si le temps annoncé dépasse la limite du mode + marge
+   * réseau). La limite vient de la CONFIG du mode — jamais d'ici.
+   */
+  const timeLimitMs =
+    getGameModeConfig(session.mode)?.timeLimitMsPerRound ?? null;
+  const timedOut =
+    timeLimitMs !== null &&
+    (input.timedOut === true ||
+      (timeMs !== null && timeMs > timeLimitMs + 2000));
+
+  let mapCorrect = false;
+  let floorCorrect = false;
+  let distance: number | null = null;
+  let guessFloor: {
+    id: string;
+    name: string;
+    map: { name: string };
+  } | null = null;
+  let guessX: number | null = null;
+  let guessY: number | null = null;
+
+  if (!timedOut) {
+    if (
+      input.floorId === undefined ||
+      input.pixelX === undefined ||
+      input.pixelY === undefined
+    ) {
+      throw new GameError(400, "Invalid request");
+    }
+    const floor = await prisma.floor.findUnique({
+      where: { id: input.floorId },
+      include: { map: true },
+    });
+    if (!floor) throw new GameError(400, "Unknown floor");
+
+    guessFloor = floor;
+    guessX = input.pixelX;
+    guessY = input.pixelY;
+    mapCorrect = floor.mapId === screenshot.mapId;
+    floorCorrect = mapCorrect && floor.id === screenshot.floorId;
+    distance = floorCorrect
+      ? Math.round(
+          Math.hypot(
+            screenshot.pixelX - input.pixelX,
+            screenshot.pixelY - input.pixelY,
+          ),
+        )
+      : null;
+  }
 
   // Score de la manche — délégué au ScoreService (lib/score.ts)
   const score = scoreRound({
@@ -165,17 +222,15 @@ export async function submitGuess(
 
   const isLastRound = current.index === session.rounds.length;
   const completedAt = new Date();
-  // Temps de réponse client : purement statistique, clampé à 30 min
-  const timeMs =
-    input.timeMs !== undefined ? Math.min(input.timeMs, 30 * 60_000) : null;
 
   await prisma.$transaction(async (tx) => {
     await tx.round.update({
       where: { id: current.id },
       data: {
-        guessFloorId: guessFloor.id,
-        guessX: input.pixelX,
-        guessY: input.pixelY,
+        guessFloorId: guessFloor?.id ?? null,
+        guessX,
+        guessY,
+        timedOut,
         distance,
         score,
         timeMs,
@@ -243,7 +298,9 @@ export async function submitGuess(
   });
 
   const updatedRounds: RoundLite[] = session.rounds.map((r) =>
-    r.id === current.id ? { ...r, guessFloorId: guessFloor.id } : r,
+    r.id === current.id
+      ? { ...r, guessFloorId: guessFloor?.id ?? null, timedOut }
+      : r,
   );
 
   return {
@@ -253,6 +310,7 @@ export async function submitGuess(
       roundCount: session.rounds.length,
       mapCorrect,
       floorCorrect,
+      timedOut,
       distance,
       score,
       totalScore,
@@ -267,15 +325,16 @@ export async function submitGuess(
         y: screenshot.pixelY,
       },
       guess: {
-        mapName: guessFloor.map.name,
-        floorName: guessFloor.name,
-        x: input.pixelX,
-        y: input.pixelY,
+        mapName: guessFloor?.map.name ?? "—",
+        floorName: guessFloor?.name ?? "—",
+        x: guessX ?? 0,
+        y: guessY ?? 0,
       },
       isLastRound,
     },
     session: serializeSession(
       session.id,
+      session.mode,
       isLastRound ? "COMPLETED" : session.status,
       updatedRounds,
     ),

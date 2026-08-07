@@ -22,6 +22,11 @@ export interface GameModeOptions {
   mapId?: string;
 }
 
+/** Contexte de création : qui joue (null = anonyme). */
+export interface GameModeContext {
+  userId: string | null;
+}
+
 /** Règles déclaratives d'un mode. */
 export interface GameModeConfig {
   id: GameMode;
@@ -53,7 +58,11 @@ export interface GameModeDefinition {
   rounds: RoundGenerator;
   /**
    * Valide les options du joueur AVANT toute création (map existante,
-   * jouable…). Lève une GameError explicite sinon.
+   * connexion requise, tentative quotidienne unique…).
+   * Lève une GameError explicite sinon.
    */
-  validateOptions(options: GameModeOptions): Promise<void>;
+  validateOptions(
+    options: GameModeOptions,
+    context: GameModeContext,
+  ): Promise<void>;
 }

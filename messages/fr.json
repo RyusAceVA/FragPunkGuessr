@@ -19,7 +19,9 @@
     "closeMenu": "Fermer le menu",
     "profile": "Profil",
     "signIn": "Connexion",
-    "userMenu": "Menu utilisateur"
+    "userMenu": "Menu utilisateur",
+    "daily": "Défi du jour",
+    "leaderboards": "Classements"
   },
   "language": {
     "label": "Langue"
@@ -159,7 +161,8 @@
       "modeLabel": "Mode de jeu",
       "modeDescriptions": {
         "CLASSIC": "Toutes les maps — reconnais, puis place ton pin.",
-        "MAP_TRAINING": "Entraîne-toi sur une map de ton choix."
+        "MAP_TRAINING": "Entraîne-toi sur une map de ton choix.",
+        "TIME_ATTACK": "Règles Classique — 30 secondes par manche."
       },
       "mapLabel": "Map",
       "mapPlaceholder": "Choisis une map"
@@ -204,7 +207,9 @@
       "recap": "Voir le récapitulatif",
       "roundScore": "Score de la manche",
       "totalScore": "Cumul",
-      "roundProgress": "Manche {index} sur {total}"
+      "roundProgress": "Manche {index} sur {total}",
+      "timesUp": "Temps écoulé",
+      "timesUpDetail": "Le chrono t'a battu — la map était {name}."
     },
     "summary": {
       "title1": "Fin de",
@@ -432,7 +437,8 @@
   "modes": {
     "CLASSIC": "Classique",
     "MAP_TRAINING": "Entraînement map",
-    "TIME_ATTACK": "Contre-la-montre"
+    "TIME_ATTACK": "Contre-la-montre",
+    "DAILY": "Défi du jour"
   },
   "profile": {
     "meta": "Profil",
@@ -449,5 +455,37 @@
     "memberSince": "Membre depuis le {date}",
     "save": "Enregistrer",
     "saved": "Profil mis à jour."
+  },
+  "daily": {
+    "meta": "Défi du jour",
+    "title1": "Défi du",
+    "title2": "jour",
+    "subtitle": "{rounds, plural, one {# manche} other {# manches}} — les mêmes screenshots pour tout le monde, une tentative par jour.",
+    "rules": "Tout le monde affronte les mêmes spots, dans le même ordre. Une seule tentative — lancer le défi la consomme, partie finie ou non.",
+    "playCta": "Jouer le défi du jour",
+    "signInPrompt": "Le défi du jour est lié à ton compte : une tentative par joueur, chaque jour à minuit UTC.",
+    "signInCta": "Se connecter pour jouer",
+    "nextIn": "Prochain défi dans",
+    "yourResult": "Ton résultat du jour",
+    "attemptUsed": "Tentative utilisée — partie inachevée",
+    "todayRank": "Rang n°{rank} aujourd'hui",
+    "review": "Revoir ta partie",
+    "todayBoard": "Top 10 du jour"
+  },
+  "leaderboard": {
+    "meta": "Classements",
+    "title1": "Classe",
+    "title2": "ments",
+    "subtitle": "Meilleure partie terminée par joueur. Connecte-toi pour prendre ta place.",
+    "periods": {
+      "daily": "Jour",
+      "weekly": "Semaine",
+      "monthly": "Mois",
+      "alltime": "Tous les temps"
+    },
+    "empty": "Aucune partie terminée sur cette période — sois le premier.",
+    "you": "(toi)",
+    "yourRank": "Ton rang",
+    "games": "{count, plural, one {# partie} other {# parties}}"
   }
 }

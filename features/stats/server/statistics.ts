@@ -54,7 +54,7 @@ const ROUNDS_FROM = (userId: string, mode: GameMode | null) => Prisma.sql`
 `;
 
 /** Une manche est « jouée » quand sa réponse a été validée. */
-const PLAYED = Prisma.sql`r."guessFloorId" IS NOT NULL`;
+const PLAYED = Prisma.sql`(r."guessFloorId" IS NOT NULL OR r."timedOut")`;
 
 async function getOverview(
   userId: string,
@@ -94,7 +94,9 @@ async function getOverview(
       COUNT(*) FILTER (WHERE r."guessFloorId" = s."floorId")::int AS rounds_won,
       COALESCE(SUM(r.score), 0)::int AS total_score,
       COUNT(*) FILTER (WHERE r.score = ${SCORE_CONFIG.maxPerRound})::int AS perfects,
-      COUNT(*) FILTER (WHERE gf."mapId" IS DISTINCT FROM s."mapId")::int AS wrong_maps,
+      COUNT(*) FILTER (
+        WHERE gf."mapId" IS NOT NULL AND gf."mapId" <> s."mapId"
+      )::int AS wrong_maps,
       COUNT(*) FILTER (
         WHERE gf."mapId" = s."mapId" AND r."guessFloorId" <> s."floorId"
       )::int AS wrong_floors,
@@ -432,7 +434,10 @@ export async function getSessionDetail(
   const floorsById = new Map(guessFloors.map((f) => [f.id, f]));
 
   const rounds: SessionDetailRound[] = session.rounds
-    .filter((r) => r.guessFloorId !== null && r.screenshot.floor !== null)
+    .filter(
+      (r) =>
+        (r.guessFloorId !== null || r.timedOut) && r.screenshot.floor !== null,
+    )
     .map((round) => {
       const guessFloor = floorsById.get(round.guessFloorId as string) ?? null;
       const actualFloor = round.screenshot.floor as NonNullable<

@@ -17,6 +17,8 @@ import { useUiStore } from "@/store/ui-store";
 const NAV_ITEMS = [
   { href: "/", key: "home" },
   { href: "/play", key: "play" },
+  { href: "/daily", key: "daily" },
+  { href: "/leaderboards", key: "leaderboards" },
   { href: "/stats", key: "stats" },
   { href: "/admin", key: "admin" },
 ] as const;

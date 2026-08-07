@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe2, Loader2, Play, Target } from "lucide-react";
+import { Globe2, Loader2, Play, Target, TimerIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -26,10 +26,14 @@ interface StartScreenProps {
   onStart: (input: CreateSessionInput) => void;
 }
 
-/** Modes proposés à l'écran (le serveur reste seul juge via le registre). */
+/**
+ * Modes proposés à l'écran (le serveur reste seul juge via le registre).
+ * Le Daily Challenge n'apparaît pas ici : il se lance depuis /daily.
+ */
 const MODE_CHOICES = [
   { id: "CLASSIC" as GameMode, icon: Globe2 },
   { id: "MAP_TRAINING" as GameMode, icon: Target },
+  { id: "TIME_ATTACK" as GameMode, icon: TimerIcon },
 ] as const;
 
 /**

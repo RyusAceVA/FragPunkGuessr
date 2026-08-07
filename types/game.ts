@@ -22,7 +22,12 @@ export type Difficulty = z.infer<typeof difficultySchema>;
  * TIME_ATTACK est déclaré par anticipation (stats prêtes), pas encore
  * implémenté.
  */
-export const GAME_MODES = ["CLASSIC", "MAP_TRAINING", "TIME_ATTACK"] as const;
+export const GAME_MODES = [
+  "CLASSIC",
+  "MAP_TRAINING",
+  "TIME_ATTACK",
+  "DAILY",
+] as const;
 export const gameModeSchema = z.enum(GAME_MODES);
 export type GameMode = z.infer<typeof gameModeSchema>;
 

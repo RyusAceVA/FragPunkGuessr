@@ -11,6 +11,7 @@ import { useRoundManager } from "../hooks/use-round-manager";
 import { useGameStore } from "../store";
 import { GuessPanel } from "./guess-panel";
 import { ResultLoading, ResultOverlay } from "./result-overlay";
+import { RoundTimer } from "./round-timer";
 import { ScreenshotView } from "./screenshot-view";
 import { StartScreen } from "./start-screen";
 import { SummaryScreen } from "./summary-screen";
@@ -32,8 +33,14 @@ export function GameScreen() {
   const backToIdle = useGameStore((s) => s.backToIdle);
   const markRoundStarted = useGameStore((s) => s.markRoundStarted);
 
-  const { startSession, validateGuess, isStartingSession, isValidating } =
-    useRoundManager();
+  const {
+    startSession,
+    validateGuess,
+    submitTimeout,
+    isStartingSession,
+    isValidating,
+  } = useRoundManager();
+  const roundStartedAt = useGameStore((s) => s.roundStartedAt);
 
   // L'image de la manche est-elle affichée ? (sinon : écran de chargement)
   const [screenshotReady, setScreenshotReady] = useState(false);
@@ -89,6 +96,18 @@ export function GameScreen() {
         >
           <X />
         </Button>
+        {/* Compte à rebours des modes chronométrés — la limite vient
+            du DTO de session, jamais du gameplay */}
+        {phase === "round" &&
+          session.timeLimitMsPerRound !== null &&
+          screenshotReady &&
+          roundStartedAt !== null && (
+            <RoundTimer
+              startedAt={roundStartedAt}
+              limitMs={session.timeLimitMsPerRound}
+              onExpire={submitTimeout}
+            />
+          )}
       </div>
 
       {/* Bouton Deviner */}

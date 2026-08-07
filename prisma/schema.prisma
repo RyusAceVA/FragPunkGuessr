@@ -193,6 +193,8 @@ model GameSession {
 
   @@index([userId])
   @@index([status])
+  // Classements par période : parties terminées triées par date
+  @@index([status, completedAt])
 }
 
 // Une manche : le screenshot est tiré à la création de la session
@@ -209,6 +211,9 @@ model Round {
   guessX       Int?
   guessY       Int?
   guessFloorId String?
+  // Temps écoulé (Time Attack) : manche perdue sans réponse —
+  // une manche est « jouée » si guessFloorId non null OU timedOut
+  timedOut     Boolean @default(false)
   // Distance en pixels (null si mauvaise map / mauvais étage)
   distance     Float?
   score        Int?

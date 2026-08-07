@@ -56,9 +56,38 @@ export function useRoundManager() {
     );
   }
 
+  /**
+   * Temps écoulé (modes chronométrés) : la manche est perdue sans
+   * réponse. Ignoré si une validation est déjà en vol ou si la manche
+   * n'est plus en cours (résultat déjà affiché).
+   */
+  function submitTimeout() {
+    const { session, currentRound, phase, roundStartedAt } =
+      useGameStore.getState();
+    if (!session || !currentRound || phase !== "round") return;
+    if (submitGuessMutation.isPending) return;
+    submitGuessMutation.mutate(
+      {
+        sessionId: session.id,
+        roundId: currentRound.id,
+        timedOut: true,
+        timeMs:
+          roundStartedAt !== null
+            ? Math.max(0, Date.now() - roundStartedAt)
+            : undefined,
+      },
+      {
+        onSuccess: ({ result, session: updated }) =>
+          store.showResult(result, updated),
+        onError: (error) => toast.error(error.message),
+      },
+    );
+  }
+
   return {
     startSession,
     validateGuess,
+    submitTimeout,
     isStartingSession: startSessionMutation.isPending,
     isValidating: submitGuessMutation.isPending,
   };
