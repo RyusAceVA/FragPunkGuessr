@@ -54,27 +54,94 @@
   "stats": {
     "meta": "Stats",
     "title": "Statistiques",
-    "subtitle": "Ton game sense en chiffres. Ces données seront alimentées automatiquement par tes parties.",
-    "tiles": {
-      "games": {
-        "label": "Parties jouées",
-        "hint": "Toutes maps confondues"
-      },
-      "best": {
-        "label": "Meilleur score",
-        "hint": "Record personnel"
-      },
-      "accuracy": {
-        "label": "Précision moyenne",
-        "hint": "Distance moyenne au point exact"
-      },
-      "time": {
-        "label": "Temps de jeu",
-        "hint": "Cumulé sur toutes les sessions"
-      }
+    "subtitle": "Chaque partie jouée en étant connecté alimente ces chiffres.",
+    "signIn": {
+      "title": "Connecte-toi pour suivre ta progression",
+      "description": "Les statistiques sont liées à ton compte : joue connecté et chaque partie, manche et pin atterrit ici.",
+      "cta": "Se connecter"
     },
-    "chartTitle": "Progression des scores",
-    "chartEmpty": "Les graphiques apparaîtront ici dès que tes premières parties seront enregistrées."
+    "empty": "Aucune partie enregistrée — lance ta première partie pour allumer cette page.",
+    "playCta": "Jouer maintenant",
+    "overview": {
+      "title": "Vue d'ensemble",
+      "gamesPlayed": "Parties jouées",
+      "gamesCompleted": "Parties terminées",
+      "roundsPlayed": "Manches jouées",
+      "roundsWon": "Manches gagnées",
+      "totalScore": "Score total",
+      "averageScore": "Score moyen / partie",
+      "bestScore": "Meilleur score",
+      "accuracy": "Précision moyenne",
+      "averageDistance": "Distance moyenne",
+      "averageTime": "Temps de réponse moyen",
+      "perfects": "Manches parfaites",
+      "wrongMaps": "Mauvaises maps",
+      "wrongFloors": "Mauvais étages"
+    },
+    "charts": {
+      "title": "Progression",
+      "score": "Score — {count, plural, one {dernière partie} other {# dernières parties}}",
+      "accuracy": "Précision — {count, plural, one {dernière partie} other {# dernières parties}}",
+      "empty": "Termine au moins deux parties pour tracer ta progression."
+    },
+    "maps": {
+      "title": "Par map",
+      "subtitle": "De ta pire map à ta meilleure.",
+      "map": "Map",
+      "games": "Parties",
+      "rounds": "Manches",
+      "avgScore": "Score moyen",
+      "accuracy": "Précision",
+      "avgDistance": "Dist. moy.",
+      "winRate": "Réussite",
+      "best": "Record",
+      "empty": "Aucune manche jouée pour l'instant."
+    },
+    "floors": {
+      "title": "Par étage",
+      "subtitle": "Repère les niveaux que tu confonds.",
+      "floor": "Étage",
+      "rounds": "Manches",
+      "avgScore": "Score moyen",
+      "accuracy": "Précision",
+      "winRate": "Réussite",
+      "wrongFloor": "Mauvais étage",
+      "empty": "Aucune manche jouée pour l'instant."
+    },
+    "heatmap": {
+      "title": "Heatmap des erreurs",
+      "subtitle": "Tes erreurs projetées sur les plans — plus c'est chaud, plus tu rates.",
+      "floorLabel": "Étage",
+      "roundsOn": "{count, plural, one {# manche jouée} other {# manches jouées}}",
+      "legendLow": "Précis",
+      "legendHigh": "Raté",
+      "empty": "Joue des manches en étant connecté pour construire une heatmap."
+    },
+    "history": {
+      "title": "Historique",
+      "subtitle": "{count, plural, one {Ta dernière partie terminée} other {Tes # dernières parties terminées}}.",
+      "open": "Revoir",
+      "empty": "Aucune partie terminée pour l'instant."
+    },
+    "detail": {
+      "metaTitle": "Relecture de partie",
+      "title1": "Relecture de",
+      "title2": "partie",
+      "back": "Retour aux stats",
+      "score": "Score",
+      "accuracy": "Précision",
+      "duration": "Durée",
+      "round": "Manche {index}",
+      "map": "Map : {name}",
+      "floor": "Étage : {name}",
+      "answered": " — tu as répondu {name}",
+      "distance": "{distance} px",
+      "time": "{seconds} s",
+      "lost": "Perdue",
+      "actualSpot": "Vraie position",
+      "yourPin": "Ton pin",
+      "screenshotAlt": "Screenshot de la manche {index}"
+    }
   },
   "play": {
     "meta": "Jouer",

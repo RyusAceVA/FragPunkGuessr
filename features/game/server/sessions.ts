@@ -59,8 +59,13 @@ function serializeSession(
  * (aucun doublon possible dans une partie, quel que soit le pool) et
  * matérialise les manches en base. Le client ne reçoit que les ids de
  * manches et l'image de la première.
+ *
+ * `userId` (joueur connecté) rattache la partie à un profil pour les
+ * statistiques ; null = partie anonyme, jamais comptée dans un profil.
  */
-export async function createSession(): Promise<GameSessionState> {
+export async function createSession(
+  userId: string | null = null,
+): Promise<GameSessionState> {
   const screenshotIds = await pickRandomScreenshots(
     GAME_CONFIG.roundsPerSession,
   );
@@ -71,6 +76,7 @@ export async function createSession(): Promise<GameSessionState> {
   const session = await prisma.gameSession.create({
     data: {
       mode: "CLASSIC",
+      userId,
       rounds: {
         create: screenshotIds.map((screenshotId, i) => ({
           screenshotId,
@@ -146,9 +152,13 @@ export async function submitGuess(
   const totalScore = session.score + score;
 
   const isLastRound = current.index === session.rounds.length;
+  const completedAt = new Date();
+  // Temps de réponse client : purement statistique, clampé à 30 min
+  const timeMs =
+    input.timeMs !== undefined ? Math.min(input.timeMs, 30 * 60_000) : null;
 
-  await prisma.$transaction([
-    prisma.round.update({
+  await prisma.$transaction(async (tx) => {
+    await tx.round.update({
       where: { id: current.id },
       data: {
         guessFloorId: guessFloor.id,
@@ -156,18 +166,69 @@ export async function submitGuess(
         guessY: input.pixelY,
         distance,
         score,
+        timeMs,
       },
-    }),
-    prisma.gameSession.update({
+    });
+    await tx.gameSession.update({
       where: { id: session.id },
       data: {
         score: totalScore,
-        ...(isLastRound
-          ? { status: "COMPLETED", completedAt: new Date() }
-          : {}),
+        ...(isLastRound ? { status: "COMPLETED", completedAt } : {}),
       },
-    }),
-  ]);
+    });
+
+    /*
+     * Cache incrémental UserStats (joueur connecté uniquement) : les
+     * compteurs cumulables sont mis à jour au fil de l'eau — jamais de
+     * recalcul complet. La source de vérité reste Round/GameSession
+     * (le StatisticsService y lit les statistiques détaillées) ;
+     * UserStats servira aux lectures O(1) inter-joueurs (classements).
+     */
+    if (session.userId) {
+      const perfect = score === SCORE_CONFIG.maxPerRound ? 1 : 0;
+      const playTimeMs = timeMs ?? 0;
+      await tx.userStats.upsert({
+        where: { userId: session.userId },
+        create: {
+          userId: session.userId,
+          roundsPlayed: 1,
+          totalScore: score,
+          perfectGuesses: perfect,
+          playTimeMs,
+          ...(isLastRound
+            ? {
+                gamesPlayed: 1,
+                bestScore: totalScore,
+                averageScore: totalScore,
+              }
+            : {}),
+        },
+        update: {
+          roundsPlayed: { increment: 1 },
+          totalScore: { increment: score },
+          perfectGuesses: { increment: perfect },
+          playTimeMs: { increment: playTimeMs },
+        },
+      });
+      if (isLastRound) {
+        // Moyenne et record sur les parties TERMINÉES uniquement
+        const agg = await tx.gameSession.aggregate({
+          where: { userId: session.userId, status: "COMPLETED" },
+          _count: { _all: true },
+          _avg: { score: true },
+          _max: { score: true },
+        });
+        await tx.userStats.update({
+          where: { userId: session.userId },
+          data: {
+            gamesPlayed: agg._count._all,
+            averageScore: agg._avg.score ?? 0,
+            bestScore: agg._max.score ?? 0,
+          },
+        });
+      }
+    }
+  });
 
   const updatedRounds: RoundLite[] = session.rounds.map((r) =>
     r.id === current.id ? { ...r, guessFloorId: guessFloor.id } : r,

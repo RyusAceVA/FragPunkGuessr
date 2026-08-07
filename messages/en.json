@@ -54,27 +54,94 @@
   "stats": {
     "meta": "Stats",
     "title": "Statistics",
-    "subtitle": "Your game sense in numbers. This data will be fed automatically by your matches.",
-    "tiles": {
-      "games": {
-        "label": "Matches played",
-        "hint": "Across all maps"
-      },
-      "best": {
-        "label": "Best score",
-        "hint": "Personal record"
-      },
-      "accuracy": {
-        "label": "Average accuracy",
-        "hint": "Mean distance to the exact spot"
-      },
-      "time": {
-        "label": "Time played",
-        "hint": "Across all sessions"
-      }
+    "subtitle": "Every match you play while signed in feeds these numbers.",
+    "signIn": {
+      "title": "Sign in to track your progress",
+      "description": "Statistics are tied to your account: play while signed in and every match, round and pin ends up here.",
+      "cta": "Sign in"
     },
-    "chartTitle": "Score progression",
-    "chartEmpty": "Charts will appear here once your first matches are recorded."
+    "empty": "No match on record yet — play your first match to light this page up.",
+    "playCta": "Play now",
+    "overview": {
+      "title": "Overview",
+      "gamesPlayed": "Matches played",
+      "gamesCompleted": "Matches completed",
+      "roundsPlayed": "Rounds played",
+      "roundsWon": "Rounds won",
+      "totalScore": "Total score",
+      "averageScore": "Avg score / match",
+      "bestScore": "Best score",
+      "accuracy": "Avg accuracy",
+      "averageDistance": "Avg distance",
+      "averageTime": "Avg answer time",
+      "perfects": "Perfect rounds",
+      "wrongMaps": "Wrong maps",
+      "wrongFloors": "Wrong floors"
+    },
+    "charts": {
+      "title": "Progression",
+      "score": "Score — last {count, plural, one {# match} other {# matches}}",
+      "accuracy": "Accuracy — last {count, plural, one {# match} other {# matches}}",
+      "empty": "Finish at least two matches to draw your progression."
+    },
+    "maps": {
+      "title": "By map",
+      "subtitle": "Sorted from your weakest map to your strongest.",
+      "map": "Map",
+      "games": "Matches",
+      "rounds": "Rounds",
+      "avgScore": "Avg score",
+      "accuracy": "Accuracy",
+      "avgDistance": "Avg dist.",
+      "winRate": "Win rate",
+      "best": "Best",
+      "empty": "No round played yet."
+    },
+    "floors": {
+      "title": "By floor",
+      "subtitle": "Spot the levels you keep mixing up.",
+      "floor": "Floor",
+      "rounds": "Rounds",
+      "avgScore": "Avg score",
+      "accuracy": "Accuracy",
+      "winRate": "Win rate",
+      "wrongFloor": "Wrong floor",
+      "empty": "No round played yet."
+    },
+    "heatmap": {
+      "title": "Error heatmap",
+      "subtitle": "Your mistakes projected on the floor plans — the hotter, the worse.",
+      "floorLabel": "Floor",
+      "roundsOn": "{count, plural, one {# round played} other {# rounds played}}",
+      "legendLow": "Accurate",
+      "legendHigh": "Missed",
+      "empty": "Play rounds while signed in to build a heatmap."
+    },
+    "history": {
+      "title": "Match history",
+      "subtitle": "Your last {count, plural, one {# completed match} other {# completed matches}}.",
+      "open": "Review",
+      "empty": "No completed match yet."
+    },
+    "detail": {
+      "metaTitle": "Match review",
+      "title1": "Match",
+      "title2": "review",
+      "back": "Back to stats",
+      "score": "Score",
+      "accuracy": "Accuracy",
+      "duration": "Duration",
+      "round": "Round {index}",
+      "map": "Map: {name}",
+      "floor": "Floor: {name}",
+      "answered": " — you answered {name}",
+      "distance": "{distance} px",
+      "time": "{seconds} s",
+      "lost": "Lost",
+      "actualSpot": "Actual spot",
+      "yourPin": "Your pin",
+      "screenshotAlt": "Round {index} screenshot"
+    }
   },
   "play": {
     "meta": "Play",

@@ -25,7 +25,7 @@ export function useRoundManager() {
 
   /** Valide la réponse de la manche courante (map + étage + pin requis). */
   function validateGuess() {
-    const { session, currentRound, guessFloorId, pin } =
+    const { session, currentRound, guessFloorId, pin, roundStartedAt } =
       useGameStore.getState();
     if (!session || !currentRound || !guessFloorId || !pin) return;
     submitGuessMutation.mutate(
@@ -35,6 +35,11 @@ export function useRoundManager() {
         floorId: guessFloorId,
         pixelX: pin.x,
         pixelY: pin.y,
+        // Temps de réponse (image affichée → validation), statistique
+        timeMs:
+          roundStartedAt !== null
+            ? Math.max(0, Date.now() - roundStartedAt)
+            : undefined,
       },
       {
         onSuccess: ({ result, session: updated }) =>

@@ -16,6 +16,8 @@ interface GameState {
   currentRound: SessionRound | null;
   result: RoundResult | null;
 
+  /** Début de la manche affichée (image visible) — pour le temps de réponse */
+  roundStartedAt: number | null;
   /** Panneau latéral de guess ouvert */
   panelOpen: boolean;
   /** Étape 1 du guess : map choisie par le joueur (null = liste des maps) */
@@ -26,6 +28,7 @@ interface GameState {
   pin: { x: number; y: number } | null;
 
   beginSession: (session: GameSessionState) => void;
+  markRoundStarted: () => void;
   setPanelOpen: (open: boolean) => void;
   selectGuessMap: (mapId: string, defaultFloorId: string | null) => void;
   clearGuessMap: () => void;
@@ -49,6 +52,7 @@ export const useGameStore = create<GameState>()((set) => ({
   session: null,
   currentRound: null,
   result: null,
+  roundStartedAt: null,
   ...EMPTY_GUESS,
 
   beginSession: (session) =>
@@ -57,8 +61,11 @@ export const useGameStore = create<GameState>()((set) => ({
       session,
       currentRound: session.currentRound,
       result: null,
+      roundStartedAt: null,
       ...EMPTY_GUESS,
     }),
+
+  markRoundStarted: () => set({ roundStartedAt: Date.now() }),
 
   setPanelOpen: (open) => set({ panelOpen: open }),
 
@@ -91,6 +98,7 @@ export const useGameStore = create<GameState>()((set) => ({
         phase: "round" as const,
         currentRound: state.session.currentRound,
         result: null,
+        roundStartedAt: null,
         ...EMPTY_GUESS,
       };
     }),

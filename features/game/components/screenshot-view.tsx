@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Crosshair } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Étape 3 : le screenshot à deviner, plein cadre.
@@ -25,9 +25,13 @@ export function ScreenshotView({
   const [src, setSrc] = useState<string | null>(null);
   const [percent, setPercent] = useState(0);
 
+  // Notifie le parent uniquement quand la visibilité de l'image change
+  // (ref : une callback instable ne doit pas re-déclencher l'effet)
+  const onReadyChangeRef = useRef(onReadyChange);
+  onReadyChangeRef.current = onReadyChange;
   useEffect(() => {
-    onReadyChange?.(src !== null);
-  }, [src, onReadyChange]);
+    onReadyChangeRef.current?.(src !== null);
+  }, [src]);
 
   useEffect(() => {
     let cancelled = false;

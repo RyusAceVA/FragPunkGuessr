@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Crosshair, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -30,12 +30,21 @@ export function GameScreen() {
   const setPanelOpen = useGameStore((s) => s.setPanelOpen);
   const advance = useGameStore((s) => s.advance);
   const backToIdle = useGameStore((s) => s.backToIdle);
+  const markRoundStarted = useGameStore((s) => s.markRoundStarted);
 
   const { startSession, validateGuess, isStartingSession, isValidating } =
     useRoundManager();
 
   // L'image de la manche est-elle affichée ? (sinon : écran de chargement)
   const [screenshotReady, setScreenshotReady] = useState(false);
+  const handleScreenshotReady = useCallback(
+    (ready: boolean) => {
+      setScreenshotReady(ready);
+      // L'image est visible : le chrono du temps de réponse démarre
+      if (ready) markRoundStarted();
+    },
+    [markRoundStarted],
+  );
 
   if (phase === "idle" || !session) {
     return (
@@ -60,7 +69,7 @@ export function GameScreen() {
     <div className="relative h-full overflow-hidden">
       <ScreenshotView
         imageUrl={currentRound.imageUrl}
-        onReadyChange={setScreenshotReady}
+        onReadyChange={handleScreenshotReady}
       />
 
       {/* Chrome de la manche — aucune info sur la map, seulement la progression */}
