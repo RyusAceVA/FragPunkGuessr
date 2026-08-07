@@ -119,6 +119,9 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    /* Scrollbars fines et discrètes — jamais de barre grise système */
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0.4 0.05 296) transparent;
   }
   body {
     @apply bg-background text-foreground;

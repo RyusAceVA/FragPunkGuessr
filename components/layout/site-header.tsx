@@ -2,18 +2,15 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Crosshair, LogIn, LogOut, Menu, UserRound, X } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTransition } from "react";
 
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { type HeaderUser, UserMenu } from "@/components/layout/user-menu";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { logout } from "@/features/auth/actions";
 import { cn } from "@/lib/utils";
 import { useUiStore } from "@/store/ui-store";
 
@@ -28,15 +25,21 @@ function isActiveLink(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
 }
 
-export function SiteHeader() {
+/**
+ * Header du site. `user` vient du RootLayout (session lue par auth()
+ * côté serveur) : chaque Server Action d'authentification invalide le
+ * Router Cache, le layout se re-rend, le header est toujours à jour —
+ * sans SessionProvider ni rechargement manuel.
+ */
+export function SiteHeader({ user }: { user: HeaderUser | null }) {
   const pathname = usePathname();
   const t = useTranslations("nav");
   const { isMobileNavOpen, toggleMobileNav, closeMobileNav } = useUiStore();
-  const { data: session } = useSession();
+  const [isLoggingOut, startLogout] = useTransition();
 
   // Le lien Admin n'apparaît que pour les administrateurs connectés
   const visibleItems = NAV_ITEMS.filter(
-    (item) => item.href !== "/admin" || session?.user?.role === "ADMIN",
+    (item) => item.href !== "/admin" || user?.role === "ADMIN",
   );
 
   return (
@@ -95,41 +98,8 @@ export function SiteHeader() {
           <Button size="sm" nativeButton={false} render={<Link href="/play" />}>
             {t("launch")}
           </Button>
-          {session?.user ? (
-            <>
-              {/* Chip profil : username → page profil */}
-              <Link
-                href="/profile"
-                className={cn(
-                  "clip-slash flex items-center gap-1.5 px-2.5 py-1.5 font-heading text-xs font-bold tracking-wide uppercase transition-colors",
-                  pathname.startsWith("/profile")
-                    ? "bg-primary/20 text-primary"
-                    : "bg-muted text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <UserRound className="size-3.5" aria-hidden />
-                <span className="max-w-28 truncate">
-                  {session.user.name ?? t("profile")}
-                </span>
-              </Link>
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      onClick={() => signOut({ callbackUrl: "/" })}
-                      aria-label={t("logout")}
-                    >
-                      <LogOut />
-                    </Button>
-                  }
-                />
-                <TooltipContent>
-                  {t("logoutTooltip", { email: session.user.email ?? "" })}
-                </TooltipContent>
-              </Tooltip>
-            </>
+          {user ? (
+            <UserMenu user={user} />
           ) : (
             <Button
               variant="outline"
@@ -190,7 +160,7 @@ export function SiteHeader() {
                   </Link>
                 </li>
               ))}
-              {session?.user ? (
+              {user ? (
                 <>
                   <li>
                     <Link
@@ -205,8 +175,9 @@ export function SiteHeader() {
                   <li>
                     <button
                       type="button"
-                      onClick={() => signOut({ callbackUrl: "/" })}
-                      className="flex w-full items-center gap-2 px-3 py-2.5 font-heading text-sm font-semibold tracking-wide text-muted-foreground uppercase transition-colors hover:bg-accent hover:text-foreground"
+                      disabled={isLoggingOut}
+                      onClick={() => startLogout(() => logout())}
+                      className="flex w-full items-center gap-2 px-3 py-2.5 font-heading text-sm font-semibold tracking-wide text-muted-foreground uppercase transition-colors hover:bg-accent hover:text-foreground disabled:opacity-60"
                     >
                       <LogOut className="size-4" aria-hidden />
                       {t("logout")}

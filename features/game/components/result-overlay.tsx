@@ -270,43 +270,52 @@ export function ResultOverlay({
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.4 }}
-          className="flex min-h-0 w-full shrink-0 flex-col gap-3 overflow-y-auto lg:w-80"
+          className="flex min-h-0 w-full shrink-0 flex-col lg:w-80"
         >
-          <Verdict result={result} />
-          <ScoreCard result={result} />
+          {/*
+           * Seule cette zone défile sur petits écrans : le CTA vit en
+           * dessous, HORS du scroll — toujours visible, hitbox jamais
+           * rognée par une scrollbar.
+           */}
+          {/* Layout block (pas flex) : les cartes gardent leur hauteur
+              et l'excédent défile au lieu de comprimer le contenu */}
+          <div className="min-h-0 flex-1 space-y-3 overflow-x-hidden overflow-y-auto">
+            <Verdict result={result} />
+            <ScoreCard result={result} />
 
-          <div className="panel clip-notch overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element -- image servie par l'id de manche */}
-            <img
-              src={screenshotUrl}
-              alt={t("screenshotAlt")}
-              className="aspect-video w-full bg-black/50 object-contain"
-              decoding="async"
-            />
-          </div>
-
-          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <span
-                className="size-2"
-                style={{ background: ACTUAL_PIN_COLOR }}
-                aria-hidden
+            <div className="panel clip-notch overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element -- image servie par l'id de manche */}
+              <img
+                src={screenshotUrl}
+                alt={t("screenshotAlt")}
+                className="aspect-video w-full bg-black/50 object-contain"
+                decoding="async"
               />
-              {t("actualSpot")}
-            </span>
-            {result.floorCorrect && (
+            </div>
+
+            <div className="flex items-center justify-center gap-4 pb-1 text-xs text-muted-foreground">
               <span className="flex items-center gap-1.5">
                 <span
                   className="size-2"
-                  style={{ background: PLAYER_PIN_COLOR }}
+                  style={{ background: ACTUAL_PIN_COLOR }}
                   aria-hidden
                 />
-                {t("yourPin")}
+                {t("actualSpot")}
               </span>
-            )}
+              {result.floorCorrect && (
+                <span className="flex items-center gap-1.5">
+                  <span
+                    className="size-2"
+                    style={{ background: PLAYER_PIN_COLOR }}
+                    aria-hidden
+                  />
+                  {t("yourPin")}
+                </span>
+              )}
+            </div>
           </div>
 
-          <div className="mt-auto">
+          <div className="shrink-0 pt-3">
             <Button className="w-full" size="lg" onClick={onNext}>
               {result.isLastRound ? (
                 <>

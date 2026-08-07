@@ -18,7 +18,8 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "profile": "Profile",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "userMenu": "User menu"
   },
   "language": {
     "label": "Language"

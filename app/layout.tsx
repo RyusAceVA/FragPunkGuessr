@@ -6,6 +6,7 @@ import { Chakra_Petch, Geist_Mono, Oswald } from "next/font/google";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { AppProviders } from "@/components/providers/app-providers";
+import { auth } from "@/features/auth";
 import { siteConfig } from "@/lib/site-config";
 
 import "./globals.css";
@@ -49,6 +50,20 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  /*
+   * Session lue CÔTÉ SERVEUR à chaque rendu du layout (modèle Auth.js
+   * v5 / Next 15) : les Server Actions de connexion/déconnexion
+   * invalident le Router Cache, le layout est re-rendu, le header
+   * reçoit l'état frais — aucun rechargement manuel nécessaire.
+   */
+  const session = await auth();
+  const headerUser = session?.user
+    ? {
+        name: session.user.name ?? "",
+        email: session.user.email ?? "",
+        role: session.user.role,
+      }
+    : null;
 
   return (
     <html
@@ -59,7 +74,7 @@ export default async function RootLayout({
       <body className="flex min-h-dvh flex-col antialiased">
         <NextIntlClientProvider>
           <AppProviders>
-            <SiteHeader />
+            <SiteHeader user={headerUser} />
             <main className="flex-1">{children}</main>
             <SiteFooter />
           </AppProviders>

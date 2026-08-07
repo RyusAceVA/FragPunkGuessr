@@ -98,7 +98,7 @@ export function SummaryScreen({
   const rounds = summary?.rounds ?? [];
 
   return (
-    <div className="mx-auto flex h-full w-full max-w-2xl flex-col gap-4 overflow-y-auto px-4 py-8 sm:px-6">
+    <div className="mx-auto flex h-full w-full max-w-2xl flex-col gap-4 overflow-x-hidden overflow-y-auto px-4 py-8 sm:px-6">
       <FadeIn>
         <div className="space-y-1 text-center">
           <h1 className="display text-5xl">
